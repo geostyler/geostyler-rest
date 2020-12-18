@@ -1,15 +1,15 @@
-# node-rest-template
+# GeoStyler REST
 
-Template for a Node.js based REST API.
+REST interface for GeoStyler to convert between various formats for styling of geographic data.
 
 ## Dev-Setup
 
 ### Run dev-server
 
 ```
-git clone https://github.com/meggsimum/node-rest-template.git
+git clone https://github.com/chrismayer/geostyler-rest.git
 
-cd node-rest-template
+cd geostyler-rest
 
 npm install
 
