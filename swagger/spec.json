@@ -1,0 +1,102 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+      "title": "GeoStyler REST API",
+      "version": "0.0.1",
+      "description":
+      "REST interface for GeoStyler to convert between various formats for styling of geographic data.",
+      "license": {
+        "name": "BSD-2-Clause"
+      },
+      "contact": {
+        "name": "meggsimum - Christian Mayer",
+        "url": "https://meggsimum.de",
+        "email": "info@meggsimum.de"
+      }
+    },
+    "servers": [],
+    "paths": {
+        "/geostyler-rest/rpc/transform": {
+          "post": {
+            "summary": "Uses GeoStyler to convert between various formats for styling of geographic data.",
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain"
+            ],
+            "consumes": [
+              "application/json",
+              "application/xml",
+              "text/plain"
+            ],
+            "requestBody": {
+              "description": "Source style object to be transformed",
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "example": {"version":8,"name":"Demo Style","layers":[{"id":"Rule 1","type":"circle","paint":{"circle-radius":16,"circle-color":"#4b33c8"}}]}
+                  }
+                },
+                "application/xml": {
+                  "schema": {
+                    "type": "String",
+                    "example": ""
+                  }
+                },
+                "text:plain": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "parameters": [
+              {
+                "name": "sourceFormat",
+                "in": "query",
+                "required": true,
+                "type": "string",
+                "schema": {
+                  "type": "string",
+                  "enum": ["SLD", "Mapbox", "QML", "Map"]
+                }
+              },
+              {
+                "name": "targetFormat",
+                "in": "query",
+                "required": true,
+                "type": "string",
+                "schema": {
+                  "type": "string",
+                  "enum": ["SLD", "Mapbox", "QML", "Map"]
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Transformed style object in target format.",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object"
+                    }
+                  },
+                  "application/xml": {
+                    "schema": {
+                      "type": "object"
+                    }
+                  },
+                  "text:plain": {
+                    "schema": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+    }
+}
