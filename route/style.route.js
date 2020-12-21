@@ -45,7 +45,7 @@ module.exports = function (app) {
 };
 
 /**
- * Send the HTTP response fo the target style object.
+ * Send the HTTP response for the target style object.
  *
  * @param {String} targetStyle Transformed style object in target format
  * @param {String} targetFormat Target content-type format, e.g. 'application/json'
