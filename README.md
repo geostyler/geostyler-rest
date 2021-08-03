@@ -7,7 +7,7 @@ REST interface for GeoStyler to convert between various formats for styling of g
 ### Run dev-server
 
 ```
-git clone https://github.com/chrismayer/geostyler-rest.git
+git clone https://github.com/geostyler/geostyler-rest.git
 
 cd geostyler-rest
 
@@ -39,7 +39,7 @@ npm start
 ```
 cd /path/to/this/checkout
 
-docker build -t node_rest_server .
+docker build -t geostyler_rest_server .
 
-docker run -e NODE_API_PORT=9999 -p 9999:9999 node_rest_server
+docker run -e NODE_API_PORT=9999 -p 9999:9999 geostyler_rest_server
 ```
