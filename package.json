@@ -19,20 +19,20 @@
     "express": "^4.17.1",
     "geostyler-mapbox-parser": "^0.1.0",
     "geostyler-mapfile-parser": "0.0.3",
-    "geostyler-qgis-parser": "^0.2.3",
-    "geostyler-sld-parser": "^2.1.0",
-    "swagger-jsdoc": "^5.0.1",
-    "swagger-ui-express": "^4.1.5"
+    "geostyler-qgis-parser": "^0.3.0",
+    "geostyler-sld-parser": "^2.3.0",
+    "swagger-jsdoc": "^6.0.1",
+    "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
-    "eslint": "^7.5.0",
-    "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.22.0",
+    "eslint": "^8.17.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1",
-    "mocha": "^8.0.1",
-    "nodemon": "^2.0.4",
-    "supertest": "^4.0.2"
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-standard": "^5.0.0",
+    "mocha": "^10.0.0",
+    "nodemon": "^2.0.16",
+    "supertest": "^6.2.3"
   }
 }
