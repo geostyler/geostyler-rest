@@ -1,7 +1,5 @@
 /**
  * Main executable for GeoStyler REST server
- *
- * @author C. Mayer (meggsimum)
  */
 const express = require('express');
 
@@ -39,12 +37,6 @@ const swaggerOptions = {
       background-image: url(https://geostyler.org/images/geostyler-logo-full.svg);
       background-repeat: no-repeat;
       background-position-x: right;
-      background-size: 300px;
-    }
-    .info {
-      background-image: url(https://meggsimum.de/wp-content/uploads/2018/05/meggsimum-logo-rgb-500-2.png);
-      background-repeat: no-repeat;
-      background-position: right;
       background-size: 300px;
     }
     `

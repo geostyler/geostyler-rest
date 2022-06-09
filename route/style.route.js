@@ -1,7 +1,5 @@
 /**
  * REST routes for styles
- *
- * @author C. Mayer (meggsimum)
  */
 module.exports = function (app) {
   const basePath = '/geostyler-rest/rpc/transform';
