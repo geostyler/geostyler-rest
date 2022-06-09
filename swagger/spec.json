@@ -9,14 +9,14 @@
         "name": "BSD-2-Clause"
       },
       "contact": {
-        "name": "meggsimum - Christian Mayer",
-        "url": "https://meggsimum.de",
-        "email": "info@meggsimum.de"
+        "name": "The GeoStyler community",
+        "url": "https://geostyler.org/",
+        "email": "reports@geostyler.org"
       }
     },
     "servers": [],
     "paths": {
-        "/geostyler-rest/rpc/transform": {
+        "/geostyler-rest/api/rpc/transform": {
           "post": {
             "summary": "Uses GeoStyler to convert between various formats for styling of geographic data.",
             "produces": [
@@ -58,6 +58,7 @@
                 "in": "query",
                 "required": true,
                 "type": "string",
+                "default": "Mapbox",
                 "schema": {
                   "type": "string",
                   "enum": ["SLD", "Mapbox", "QML", "Map"]

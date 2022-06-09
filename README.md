@@ -14,6 +14,8 @@ cd geostyler-rest
 npm install
 
 npm run start-dev
+
+Open http://localhost:8888/geostyler-rest/api-docs/ in a browser
 ```
 
 ### Run unit tests
@@ -31,7 +33,11 @@ npm run test
 ```
 cd /path/to/this/checkout
 
+npm install
+
 npm start
+
+Open http://localhost:8888/geostyler-rest/api-docs/ in a browser
 ```
 
 ### Run with Docker
@@ -42,4 +48,6 @@ cd /path/to/this/checkout
 docker build -t geostyler_rest_server .
 
 docker run -e NODE_API_PORT=9999 -p 9999:9999 geostyler_rest_server
+
+Open http://localhost:9999/geostyler-rest/api-docs/ in a browser
 ```
