@@ -6,7 +6,7 @@ const transformRpcPath = `${rootPath}/api/rpc/transform`;
 
 describe(transformRpcPath, () => {
   it('POST returns JSON from request body', done => {
-    var data = {
+    const data = {
       version: 8,
       name: 'Demo Style',
       layers: [{
