@@ -1,5 +1,5 @@
 FROM node:lts-alpine
-LABEL maintainer="info@meggsimum.de"
+LABEL maintainer="reports@geostyler.org"
 
 COPY . .
 RUN npm install

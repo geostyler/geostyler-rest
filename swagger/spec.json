@@ -9,9 +9,9 @@
         "name": "BSD-2-Clause"
       },
       "contact": {
-        "name": "meggsimum - Christian Mayer",
-        "url": "https://meggsimum.de",
-        "email": "info@meggsimum.de"
+        "name": "The GeoStyler community",
+        "url": "https://geostyler.org/",
+        "email": "reports@geostyler.org"
       }
     },
     "servers": [],
@@ -58,6 +58,7 @@
                 "in": "query",
                 "required": true,
                 "type": "string",
+                "default": "Mapbox",
                 "schema": {
                   "type": "string",
                   "enum": ["SLD", "Mapbox", "QML", "Map"]
