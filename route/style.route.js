@@ -64,6 +64,9 @@ const sendTargetStyle = (targetStyle, targetFormat, res) => {
   if (targetType === 'application/xml' || targetType === 'text/plain') {
     res.status(200).send(targetStyle);
   } else if (targetType === 'application/json') {
+    if (typeof targetStyle === 'string') {
+      targetStyle = JSON.parse(targetStyle);
+    }
     res.status(200).json(targetStyle);
   }
 }
