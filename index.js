@@ -26,6 +26,10 @@ require('./route/style.route.js')(app);
 // Swagger
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/spec.json');
+// use the version declaration of the package.json in Swagger UI
+const packageVersion = require('./package.json').version;
+swaggerDocument.info.version = packageVersion;
+
 const swaggerOptions = {
   // dirty CSS hack to inject logos into the Swagger UI
   customCss: `
