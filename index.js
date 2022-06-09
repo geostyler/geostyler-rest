@@ -6,10 +6,11 @@
 const express = require('express');
 
 const port = process.env.NODE_API_PORT || 8888;
+const rootPath = process.env.GS_REST_ROOT_PATH || '/geostyler-rest';
 const app = express();
 
 app.use(function (req, res, next) {
-  var data = '';
+  let data = '';
   req.setEncoding('utf8');
   req.on('data', function (chunk) {
     data += chunk;
@@ -46,8 +47,13 @@ const swaggerOptions = {
     `
 };
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
+app.use(`${rootPath}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
 // END Swagger
+
+// ensure to forward to Swagger UI when root folder is accessed
+app.get(rootPath, (req, res) => {
+  res.redirect(`${rootPath}/api-docs`);
+});
 
 module.exports = app.listen(port, () =>
   console.log(`REST server listening on port ${port}!`)

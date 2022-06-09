@@ -16,7 +16,7 @@
     },
     "servers": [],
     "paths": {
-        "/geostyler-rest/rpc/transform": {
+        "/geostyler-rest/api/rpc/transform": {
           "post": {
             "summary": "Uses GeoStyler to convert between various formats for styling of geographic data.",
             "produces": [

@@ -4,12 +4,13 @@
  * @author C. Mayer (meggsimum)
  */
 module.exports = function (app) {
-  const basePath = '/geostyler-rest/rpc/transform';
+  const rootPath = process.env.GS_REST_ROOT_PATH || '/geostyler-rest';
+  const transformRpcPath = `${rootPath}/api/rpc/transform`;
 
   /**
    * Uses GeoStyler to convert between various formats for styling of geographic data.
    */
-  app.post(basePath, async (req, res) => {
+  app.post(transformRpcPath, async (req, res) => {
     const sourceStyle = req.body;
 
     if (!sourceStyle || sourceStyle === '') {

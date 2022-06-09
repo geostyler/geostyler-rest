@@ -1,11 +1,12 @@
 const request = require('supertest');
 const server = require('../index');
 
-const basePath = '/geostyler-rest/rpc/transform';
+const rootPath = process.env.GS_REST_ROOT_PATH || '/geostyler-rest';
+const transformRpcPath = `${rootPath}/api/rpc/transform`;
 
-describe(`${basePath}`, () => {
+describe(transformRpcPath, () => {
   it('POST returns JSON from request body', done => {
-    var data = {
+    const data = {
       version: 8,
       name: 'Demo Style',
       layers: [{
@@ -19,7 +20,7 @@ describe(`${basePath}`, () => {
     };
 
     request(server)
-      .post(basePath + '?sourceFormat=mapbox&targetFormat=sld')
+      .post(transformRpcPath + '?sourceFormat=mapbox&targetFormat=sld')
       .set('Content-Type', 'application/json')
       .send(data)
       .expect('Content-Type', /xml/)
