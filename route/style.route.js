@@ -9,10 +9,8 @@ module.exports = function (app) {
   /**
    * Uses GeoStyler to convert between various formats for styling of geographic data.
    */
-  app.post(basePath, (req, res) => {
+  app.post(basePath, async (req, res) => {
     const sourceStyle = req.body;
-
-    console.log(sourceStyle);
 
     if (!sourceStyle || sourceStyle === '') {
       res.status(400).json({ msg: 'error', details: 'No source style style given in POST body.' });
@@ -27,20 +25,27 @@ module.exports = function (app) {
 
     if (sourceFormat.toLowerCase() === targetFormat.toLowerCase()) {
       sendTargetStyle(sourceStyle, sourceFormat, res);
+      return;
     }
     const sourceParser = getParserFromUrlParam(sourceFormat);
     const targetParser = getParserFromUrlParam(targetFormat);
 
-    sourceParser.readStyle(sourceStyle)
-      .then(gs => {
-        targetParser.writeStyle(gs).then(function (targetStyle) {
-          // send HTTP response
-          sendTargetStyle(targetStyle, targetFormat, res);
-        });
-      }, (err) => {
-        console.error(err);
-        res.status(500).json({ msg: 'error', details: '' });
-      });
+    // read given input
+    const readResponse = await sourceParser.readStyle(sourceStyle);
+    if (Array.isArray(readResponse.errors) && readResponse.errors.length) {
+      res.status(400).json({ msg: 'Error reading input', details: '' });
+      return;
+    }
+
+    // transform input to output
+    const writeResponse = await targetParser.writeStyle(readResponse.output);
+    if (Array.isArray(writeResponse.errors) && writeResponse.errors.length) {
+      res.status(400).json({ msg: 'Error transforming input to output' });
+      return;
+    }
+
+    // send HTTP response
+    sendTargetStyle(writeResponse.output, targetFormat, res);
   });
 };
 
