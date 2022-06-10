@@ -16,6 +16,39 @@
     },
     "servers": [],
     "paths": {
+        "/geostyler-rest/api/versions": {
+          "get": {
+            "summary": "Returns the version information of this API and the GeoStyler parser libraries used.",
+            "produces": [
+              "application/json",
+              "text/html"
+            ],
+            "responses": {
+              "200": {
+                "description": "Version information listing",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "example": {
+                        "geostyler-rest": "0.0.1",
+                        "geostyler-mapbox-parser": "^2.0.0",
+                        "geostyler-mapfile-parser": "^2.0.0",
+                        "geostyler-qgis-parser": "^1.0.0",
+                        "geostyler-sld-parser": "^3.2.2"
+                      }
+                    }
+                  },
+                  "text/html": {
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "/geostyler-rest/api/rpc/transform": {
           "post": {
             "summary": "Uses GeoStyler to convert between various formats for styling of geographic data.",
