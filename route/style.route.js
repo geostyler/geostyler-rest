@@ -32,6 +32,62 @@
 module.exports = function (app) {
   const rootPath = process.env.GS_REST_ROOT_PATH || '/geostyler-rest';
   const transformRpcPath = `${rootPath}/api/rpc/transform`;
+  const getVersionsPath = `${rootPath}/api/versions`;
+
+  /**
+   * Lists the version information of this API and the GeoStyler libs used.
+   */
+  app.get(getVersionsPath, async (req, res) => {
+    const packageJson = require('../package.json');
+    const deps = packageJson.dependencies;
+    let returnHtml = false;
+
+    // check if we have an Accept: text/html request header => return HTML
+    const acceptHeader = req.headers.accept;
+    if (acceptHeader && acceptHeader !== '') {
+      const acceptValues = acceptHeader.split(',');
+      acceptValues.forEach(val => {
+        if (val === 'text/html') {
+          returnHtml = true;
+        }
+      });
+    }
+
+    if (returnHtml) {
+      const html = `
+        <html>
+        <body>
+          <ul>
+            <li>
+              GeoStyler REST: ${packageJson.version}
+            </li>
+            <li>
+              GeoStyler Mapbox Parser: ${deps['geostyler-mapbox-parser']}
+            </li>
+            <li>
+              GeoStyler Mapfile Parser: ${deps['geostyler-mapfile-parser']}
+            </li>
+            <li>
+              GeoStyler QGIS Parser: ${deps['geostyler-qgis-parser']}
+            </li>
+            <li>
+              GeoStyler SLD Parser: ${deps['geostyler-sld-parser']}
+            </li>
+          </ul>
+        </body>
+      `
+      res.status(200).send(html);
+    } else {
+      // return JSON if not explicitly forced to return HTML
+      res.status(200).json({
+        'geostyler-rest': packageJson.version,
+        'geostyler-mapbox-parser': deps['geostyler-mapbox-parser'],
+        'geostyler-mapfile-parser': deps['geostyler-mapfile-parser'],
+        'geostyler-qgis-parser': deps['geostyler-qgis-parser'],
+        'geostyler-sld-parser': deps['geostyler-sld-parser']
+      });
+    }
+  });
 
   /**
    * Uses GeoStyler to convert between various formats for styling of geographic data.
