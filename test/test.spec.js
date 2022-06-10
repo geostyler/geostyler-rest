@@ -32,6 +32,34 @@ const server = require('../index');
 
 const rootPath = process.env.GS_REST_ROOT_PATH || '/geostyler-rest';
 const transformRpcPath = `${rootPath}/api/rpc/transform`;
+const getVersionsPath = `${rootPath}/api/versions`;
+
+describe(getVersionsPath, () => {
+  it('returns the correct version information as JSON', done => {
+    request(server)
+      .get(getVersionsPath)
+      .expect('Content-Type', /json/)
+      .expect(res => {
+        assert.equal(typeof res.body, 'object');
+        assert.notEqual(typeof res.body['geostyler-rest'], 'undefined');
+        assert.notEqual(typeof res.body['geostyler-mapbox-parser'], 'undefined');
+        assert.notEqual(typeof res.body['geostyler-mapfile-parser'], 'undefined');
+        assert.notEqual(typeof res.body['geostyler-qgis-parser'], 'undefined');
+        assert.notEqual(typeof res.body['geostyler-sld-parser'], 'undefined');
+      })
+      .expect(200, done);
+  });
+  it('returns the correct version information as HTML', done => {
+    request(server)
+      .get(getVersionsPath)
+      .set('Accept', 'text/html')
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        assert.notEqual(res.text.indexOf('<html>'), -1);
+      })
+      .expect(200, done);
+  });
+});
 
 describe(`${transformRpcPath}`, () => {
   const data = {
