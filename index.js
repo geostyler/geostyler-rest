@@ -69,15 +69,15 @@ const swaggerOptions = {
       background-size: 300px;
     }
     `,
-  customCssUrl: '/static/swagger-ui-custom.css',
-  customJs: '/static/swagger-ui-custom.js'
+  customCssUrl: `${rootPath}/static/swagger-ui-custom.css`,
+  customJs: `${rootPath}/static/swagger-ui-custom.js`
 };
 
 app.use(`${rootPath}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
 // END Swagger
 
 // serve files in the static folder
-app.use('/static', express.static('static'));
+app.use(`${rootPath}/static`, express.static('static'));
 
 // ensure to forward to Swagger UI when root folder is accessed
 app.get(rootPath, (req, res) => {
