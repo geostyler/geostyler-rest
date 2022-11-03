@@ -97,6 +97,7 @@ module.exports = function (app) {
 
     if (!sourceStyle || sourceStyle === '') {
       res.status(400).json({ msg: 'error', details: 'No source style style given in POST body.' });
+      return;
     }
 
     const sourceFormat = req.query.sourceFormat;
@@ -104,6 +105,7 @@ module.exports = function (app) {
 
     if (!sourceFormat || !targetFormat) {
       res.status(400).json({ msg: 'error', details: 'URL param "sourceFormat" or "targetFormat" is missing.' });
+      return;
     }
 
     if (sourceFormat.toLowerCase() === targetFormat.toLowerCase()) {
