@@ -102,7 +102,7 @@ module.exports = function (app) {
     const sourceFormat = req.query.sourceFormat;
     const targetFormat = req.query.targetFormat;
 
-    if (!sourceFormat && !targetFormat) {
+    if (!sourceFormat || !targetFormat) {
       res.status(400).json({ msg: 'error', details: 'URL param "sourceFormat" or "targetFormat" is missing.' });
     }
 
