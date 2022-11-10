@@ -97,13 +97,15 @@ module.exports = function (app) {
 
     if (!sourceStyle || sourceStyle === '') {
       res.status(400).json({ msg: 'error', details: 'No source style style given in POST body.' });
+      return;
     }
 
     const sourceFormat = req.query.sourceFormat;
     const targetFormat = req.query.targetFormat;
 
-    if (!sourceFormat && !targetFormat) {
+    if (!sourceFormat || !targetFormat) {
       res.status(400).json({ msg: 'error', details: 'URL param "sourceFormat" or "targetFormat" is missing.' });
+      return;
     }
 
     if (sourceFormat.toLowerCase() === targetFormat.toLowerCase()) {
@@ -116,14 +118,14 @@ module.exports = function (app) {
     // read given input
     const readResponse = await sourceParser.readStyle(sourceStyle);
     if (Array.isArray(readResponse.errors) && readResponse.errors.length) {
-      res.status(400).json({ msg: 'Error reading input', details: '' });
+      res.status(400).json({ msg: 'Error reading input', details: readResponse?.errors?.[0]?.message || '' });
       return;
     }
 
     // transform input to output
     const writeResponse = await targetParser.writeStyle(readResponse.output);
     if (Array.isArray(writeResponse.errors) && writeResponse.errors.length) {
-      res.status(400).json({ msg: 'Error transforming input to output' });
+      res.status(400).json({ msg: 'Error transforming input to output', details: readResponse?.errors?.[0]?.message || '' });
       return;
     }
 

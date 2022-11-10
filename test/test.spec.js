@@ -34,6 +34,14 @@ const rootPath = process.env.GS_REST_ROOT_PATH || '/geostyler-rest';
 const transformRpcPath = `${rootPath}/api/rpc/transform`;
 const getVersionsPath = `${rootPath}/api/versions`;
 
+describe(rootPath, () => {
+  it(`redirects to ${rootPath}/api-docs`, done => {
+    request(server)
+      .get(rootPath)
+      .expect('Location', `${rootPath}/api-docs`, done)
+  });
+});
+
 describe(getVersionsPath, () => {
   it('returns the correct version information as JSON', done => {
     request(server)
