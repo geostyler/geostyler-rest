@@ -171,4 +171,28 @@ describe(`${transformRpcPath}`, () => {
       })
       .expect(400, done);
   });
+
+  it('returns 400 on unknown sourceFormat', done => {
+    request(server)
+      .post(transformRpcPath + '?sourceFormat=foo&targetFormat=qml')
+      .set('Content-Type', 'application/json')
+      .send(data)
+      .expect('Content-Type', /json/)
+      .expect((res) => {
+        assert.strictEqual(res.body.msg, 'Error reading source format');
+      })
+      .expect(400, done);
+  });
+
+  it('returns 400 on unknown targetFormat', done => {
+    request(server)
+      .post(transformRpcPath + '?sourceFormat=mapbox&targetFormat=bar')
+      .set('Content-Type', 'application/json')
+      .send(data)
+      .expect('Content-Type', /json/)
+      .expect((res) => {
+        assert.strictEqual(res.body.msg, 'Error reading target format');
+      })
+      .expect(400, done);
+  });
 });
