@@ -20,7 +20,7 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "express": "^4.18.1",
-    "geostyler-mapbox-parser": "^2.0.0",
+    "geostyler-mapbox-parser": "^3.1.1",
     "geostyler-mapfile-parser": "^2.0.0",
     "geostyler-qgis-parser": "^1.0.0",
     "geostyler-sld-parser": "^3.2.2",
