@@ -112,17 +112,12 @@ module.exports = function (app) {
     const targetParser = getParserFromUrlParam(targetFormat);
 
     if (sourceParser === undefined) {
-      res.status(400).json({ msg: 'Error reading source format', details: 'Unknown "sourceFormat"'});
+      res.status(400).json({ msg: 'Error reading source format', details: 'Unknown "sourceFormat"' });
       return;
     }
 
     if (targetParser === undefined) {
-      res.status(400).json({ msg: 'Error reading target format', details: 'Unknown "targetFormat"'});
-      return;
-    }
-
-    if (sourceFormat.toLowerCase() === targetFormat.toLowerCase()) {
-      sendTargetStyle(sourceStyle, sourceFormat, res);
+      res.status(400).json({ msg: 'Error reading target format', details: 'Unknown "targetFormat"' });
       return;
     }
 
@@ -130,6 +125,12 @@ module.exports = function (app) {
     const readResponse = await sourceParser.readStyle(sourceStyle);
     if (Array.isArray(readResponse.errors) && readResponse.errors.length) {
       res.status(400).json({ msg: 'Error reading input', details: readResponse?.errors?.[0]?.message || '' });
+      return;
+    }
+
+    // send back the input if sourceFormat equals targetFormat
+    if (sourceFormat.toLowerCase() === targetFormat.toLowerCase()) {
+      sendTargetStyle(sourceStyle, sourceFormat, res);
       return;
     }
 

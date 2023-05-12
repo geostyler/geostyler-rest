@@ -123,6 +123,18 @@ describe(`${transformRpcPath}`, () => {
       .expect(200, done);
   });
 
+  it('returns 400 for equal source and target format with nonsense input', done => {
+    request(server)
+      .post(transformRpcPath + '?sourceFormat=mapbox&targetFormat=mapbox')
+      .set('Content-Type', 'application/json')
+      .send('some nonsense data')
+      .expect('Content-Type', /json/)
+      .expect((res) => {
+        assert.strictEqual(res.body.msg, 'Error reading input');
+      })
+      .expect(400, done);
+  });
+
   it('returns Mapbox JSON', done => {
     request(server)
       .post(transformRpcPath + '?sourceFormat=sld&targetFormat=mapbox')
