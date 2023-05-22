@@ -51,3 +51,11 @@ docker run -e NODE_API_PORT=9999 -p 9999:9999 geostyler_rest_server
 
 Open http://localhost:9999/geostyler-rest/api-docs/ in a browser
 ```
+
+## <a name="funding"></a>Funding & financial sponsorship
+
+Maintenance and further development of this code can be funded through the
+[GeoStyler Open Collective](https://opencollective.com/geostyler). All contributions and
+expenses can transparently be reviewed by anyone; you see what we use the donated money for.
+Thank you for any financial support you give the GeoStyler project 💞
+
