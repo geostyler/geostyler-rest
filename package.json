@@ -27,7 +27,7 @@
     "geostyler-qgis-parser": "^2.0.0",
     "geostyler-sld-parser": "^5.0.1",
     "swagger-jsdoc": "^6.2.1",
-    "swagger-ui-express": "^4.4.0"
+    "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
     "eslint": "^8.17.0",
