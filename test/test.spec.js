@@ -26,9 +26,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-const request = require('supertest');
-const assert = require('assert')
-const server = require('../index');
+import request from 'supertest';
+import assert from 'assert';
+import server from '../src';
 
 const rootPath = process.env.GS_REST_ROOT_PATH || '/geostyler-rest';
 const transformRpcPath = `${rootPath}/api/rpc/transform`;

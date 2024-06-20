@@ -1,45 +1,21 @@
 {
-  "name": "geostyler-rest",
-  "version": "0.0.1",
-  "description": "REST interface for GeoStyler to convert between various formats for styling of geographic data.",
-  "main": "index.js",
+  "name": "geostyler-rest-bun",
+  "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "lint": "eslint index.js",
-    "start-dev": "nodemon index.js",
-    "start": "node index.js",
-    "test": "NODE_API_PORT=9999 npm run lint && mocha test/test.spec.js --exit"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.ts"
   },
-  "keywords": [
-    "GeoStyler",
-    "REST"
-  ],
-  "contributors": [
-    {
-      "name": "GeoStyler REST Contributors",
-      "url": "https://github.com/geostyler/geostyler-rest/graphs/contributors"
-    }
-  ],
-  "license": "BSD-2-Clause",
   "dependencies": {
-    "express": "^4.18.1",
-    "geostyler-mapbox-parser": "^3.1.1",
-    "geostyler-mapfile-parser": "^3.0.0",
-    "geostyler-qgis-parser": "^2.0.0",
-    "geostyler-sld-parser": "^5.0.1",
-    "swagger-jsdoc": "^6.2.1",
-    "swagger-ui-express": "^4.4.0"
+    "@elysiajs/html": "^1.0.2",
+    "@elysiajs/swagger": "^1.0.5",
+    "elysia": "^1.0.24",
+    "geostyler-lyrx-parser": "1.0.0-next.1",
+    "geostyler-sld-parser": "^6.0.0-next.8",
+    "loggisch": "^0.0.1"
   },
   "devDependencies": {
-    "eslint": "^8.17.0",
-    "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-n": "^15.2.2",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-standard": "^5.0.0",
-    "mocha": "^10.0.0",
-    "nodemon": "^2.0.16",
-    "supertest": "^6.2.3"
+    "bun-types": "latest"
   },
-  "funding": "https://opencollective.com/geostyler"
+  "module": "src/index.js"
 }

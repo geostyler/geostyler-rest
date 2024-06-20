@@ -1,7 +1,9 @@
-FROM node:lts-alpine
-LABEL maintainer="reports@geostyler.org"
+FROM oven/bun
 
 COPY . .
-RUN npm install
 
-CMD [ "npm", "start" ]
+RUN bun install
+
+ENTRYPOINT ["bun"]
+
+CMD ["src/index.ts"]
