@@ -17,7 +17,7 @@
     "geostyler-sld-parser": "^6.0.0-next.8",
     "geostyler-qgis-parser": "^2.1.0-next.3",
     "geostyler-mapbox-parser": "^6.0.0-next.1",
-    "geostyler-cql-parser": "4.0.0-beta.5",
+    "geostyler-cql-parser": "4.0.0-beta.6",
     "loggisch": "^0.0.1"
   },
   "overrides": {
