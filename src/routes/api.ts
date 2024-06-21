@@ -1,4 +1,7 @@
 import { Handler, ParseError, t } from "elysia";
+import GeoStylerLyrxParser, { LyrxParser } from "geostyler-lyrx-parser";
+import MapboxStyleParser from "geostyler-mapbox-parser";
+import QGISStyleParser from "geostyler-qgis-parser";
 // import LyrxParser from "geostyler-lyrx-parser";
 import SldParser from "geostyler-sld-parser";
 
@@ -20,22 +23,38 @@ export const transFormApi = {
   body: t.Any({
     description: 'The style to transform in the specified format',
     required: true,
-    example: {
-      "name": "My Style",
-      "rules": [
-        {
-          "name": "My Rule",
-          "symbolizers": [
-            {
-              "kind": "Mark",
-              "wellKnownName": "Circle",
-              "color": "#FF0000",
-              "radius": 6
-            }
-          ]
-        }
-      ]
-    }
+    examples: [
+      `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+      <StyledLayerDescriptor version="1.0.0"
+        xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
+        xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+        xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:se="http://www.opengis.net/se">
+        <NamedLayer>
+          <Name>My Style</Name>
+          <UserStyle>
+            <Name>My Style</Name>
+            <Title>My Style</Title>
+            <FeatureTypeStyle>
+              <Rule>
+                <Name>My Rule</Name>
+                <PointSymbolizer>
+                  <Graphic>
+                    <Mark>
+                      <WellKnownName>circle</WellKnownName>
+                      <Fill>
+                        <CssParameter name="fill">#FF0000</CssParameter>
+                      </Fill>
+                    </Mark>
+                    <Size>12</Size>
+                  </Graphic>
+                </PointSymbolizer>
+              </Rule>
+            </FeatureTypeStyle>
+          </UserStyle>
+        </NamedLayer>
+      </StyledLayerDescriptor>`
+    ]
   }),
   response: t.Any({
     description: 'The transformed style in the specified format'
@@ -47,9 +66,7 @@ export const transform: Handler = async ({
   query: { sourceFormat, targetFormat }
 }) => {
 
-  const sourceStyle = body as string;
-
-  if (!sourceStyle) {
+  if (!body) {
     log.error('Error: No source style style given in POST body.');
     throw new ParseError('Error', 'No source style style given in POST body.');
   }
@@ -64,8 +81,12 @@ export const transform: Handler = async ({
 
   let readResponse;
 
+  // TODO: type should be fixed here
+  let sourceStyle = body as any;
+
+  // if no sourceParser is given we expect the body to be a geostyler-style
   if (sourceParser === undefined) {
-    readResponse = { output: JSON.parse(sourceStyle) };
+    readResponse = { output: sourceStyle };
   } else {
     readResponse = await sourceParser.readStyle(sourceStyle);
     if (Array.isArray(readResponse.errors) && readResponse.errors.length) {
@@ -74,6 +95,7 @@ export const transform: Handler = async ({
     }
   }
 
+  // if no targetParser is given we return a geostyler-style
   if (targetParser === undefined) {
     return readResponse.output;
   }
@@ -104,7 +126,7 @@ export const transform: Handler = async ({
  * @param paramVal Query param value for the format, e.g. 'qml'
  * @returns Content-Type
  */
-const getContentTypeFromUrlParam = (paramVal: string) => {
+const getContentTypeFromParserName = (paramVal: string) => {
   if (!paramVal) {
     return undefined;
   }
@@ -135,16 +157,16 @@ const getParserFromUrlParam = (paramVal: string) => {
   }
 
   switch (paramVal.toLowerCase()) {
-    // case 'lyrx':
-    //   return new LyrxParser();
-    // case 'mapbox':
-    //   return new MapboxParser();
+    case 'lyrx':
+      return new LyrxParser();
+    case 'mapbox':
+      return new MapboxStyleParser();
     // case 'mapserver':
     //   return new MapfileParser();
     case 'sld':
       return new SldParser();
-    // case 'qml':
-    //   return new QgisParser();
+    case 'qml':
+      return new QGISStyleParser();
     case 'geostyler':
     default:
       return undefined;

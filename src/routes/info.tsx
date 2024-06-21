@@ -1,23 +1,63 @@
-import { html } from '@elysiajs/html'
-import { Handler } from 'elysia';
+// import { html } from '@elysiajs/html'
+import { Handler, t } from 'elysia';
+import {
+  dependencies as deps,
+  version
+} from '../../package.json';
+
+export const versionsApi = {
+  response: t.Any({
+    description: 'Information about the installed versions of the GeoStyler parsers.' +
+      ' If the `Accept` header is set to `application/json`, the response will be a JSON object. ' +
+      'Otherwise, the response will be an HTML page.'
+  })
+};
 
 export const versions: Handler = ({
   request
 }) => {
-  if (request.headers.get('accept') === 'text/html') {
+  if (request.headers.get('accept') === 'application/json') {
+    return {
+      'geostyler-rest': version,
+      'geostyler-mapbox-parser': getVersionString('geostyler-mapbox-parser'),
+      'geostyler-mapfile-parser': getVersionString('geostyler-mapfile-parser'),
+      'geostyler-qgis-parser': getVersionString('geostyler-qgis-parser'),
+      'geostyler-sld-parser': getVersionString('geostyler-sld-parser'),
+      'geostyler-arcgis-parser': getVersionString('geostyler-lyrx-parser')
+    };
+  } else {
     return (
       <html lang='en'>
           <head>
-              <title>Hello World</title>
+              <title>GeoStyler REST API Versions</title>
           </head>
           <body>
-              <h1>Hello World</h1>
-          </body>
+              GeoStyler REST version {version}
+          <ul>
+            <li>
+              GeoStyler Mapbox Parser: {getVersionString('geostyler-mapbox-parser')}
+            </li>
+            <li>
+              GeoStyler Mapfile Parser: {getVersionString('geostyler-mapfile-parser')}
+            </li>
+            <li>
+              GeoStyler QGIS Parser: {getVersionString('geostyler-qgis-parser')}
+            </li>
+            <li>
+              GeoStyler SLD Parser: {getVersionString('geostyler-sld-parser')}
+            </li>
+            <li>
+              GeoStyler ArcGIS Parser: {getVersionString('geostyler-lyrx-parser')}
+            </li>
+          </ul>
+        </body>
       </html>
     );
-  } else {
-    return {
-      peter: 'pan'
-    };
   }
 };
+
+const getVersionString = (parserName: string) => {
+  return deps[parserName as keyof typeof deps]
+    ? `${deps[parserName as keyof typeof deps]}`
+    : 'not installed';
+}
