@@ -1,5 +1,32 @@
+/* Released under the BSD 2-Clause License
+ *
+ * Copyright © 2020-present, meggsimum (Christian Mayer) and GeoStyler contributors
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * * Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 import { Handler, ParseError, t } from "elysia";
-import LyrxParser from "geostyler-lyrx-parser";
+import { LyrxParser } from "geostyler-lyrx-parser";
 import MapboxStyleParser from "geostyler-mapbox-parser";
 import QGISStyleParser from "geostyler-qgis-parser";
 import SldParser from "geostyler-sld-parser";
@@ -8,52 +35,33 @@ import log from 'loggisch';
 
 export const transFormApi = {
   query: t.Object({
-    sourceFormat: t.String({
+    sourceFormat: t.Optional(t.String({
       description: 'The format of the input style',
-      enum: ['geostyler', 'sld', 'qml', 'mapbox', 'mapserver', 'lyrx'],
-      default: 'geostyler'
-    }),
+      enum: ['geostyler', 'sld', 'qml', 'mapbox', 'mapserver', 'lyrx']
+    })),
     targetFormat: t.String({
       description: 'The format of the output style',
       enum: ['geostyler', 'sld', 'qml', 'mapbox', 'mapserver', 'lyrx'],
-      default: 'sld'
+      default: 'mapbox'
     })
   }),
   body: t.Any({
     description: 'The style to transform in the specified format',
     required: true,
-    examples: [
-      `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-      <StyledLayerDescriptor version="1.0.0"
-        xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
-        xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
-        xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:se="http://www.opengis.net/se">
-        <NamedLayer>
-          <Name>My Style</Name>
-          <UserStyle>
-            <Name>My Style</Name>
-            <Title>My Style</Title>
-            <FeatureTypeStyle>
-              <Rule>
-                <Name>My Rule</Name>
-                <PointSymbolizer>
-                  <Graphic>
-                    <Mark>
-                      <WellKnownName>circle</WellKnownName>
-                      <Fill>
-                        <CssParameter name="fill">#FF0000</CssParameter>
-                      </Fill>
-                    </Mark>
-                    <Size>12</Size>
-                  </Graphic>
-                </PointSymbolizer>
-              </Rule>
-            </FeatureTypeStyle>
-          </UserStyle>
-        </NamedLayer>
-      </StyledLayerDescriptor>`
-    ]
+    examples: [{
+      "name": "Demo Style",
+      "rules": [
+        {
+          "name": "Rule 1",
+          "symbolizers": [
+            {
+              "kind": "Mark",
+              "wellKnownName": "circle"
+            }
+          ]
+        }
+      ]
+    }]
   }),
   response: t.Any({
     description: 'The transformed style in the specified format'
@@ -70,7 +78,7 @@ export const transform: Handler = async ({
     throw new ParseError('Error', 'No source style style given in POST body.');
   }
 
-  if (!sourceFormat || !targetFormat) {
+  if (!targetFormat) {
     log.error('Error: URL param "sourceFormat" or "targetFormat" is missing.');
     throw new ParseError('Error', 'URL param "sourceFormat" or "targetFormat" is missing.');
   }
@@ -79,7 +87,6 @@ export const transform: Handler = async ({
   const targetParser = getParserFromUrlParam(targetFormat);
 
   let readResponse;
-
   // TODO: type should be fixed here
   let sourceStyle = body as any;
 
@@ -99,8 +106,9 @@ export const transform: Handler = async ({
     return readResponse.output;
   }
 
+
   // send back the input if sourceFormat equals targetFormat
-  if (sourceFormat.toLowerCase() === targetFormat.toLowerCase()) {
+  if (sourceFormat?.toLowerCase() === targetFormat.toLowerCase()) {
     return sourceStyle;
   }
 
@@ -110,13 +118,17 @@ export const transform: Handler = async ({
   }
 
   // transform input to output
-  const writeResponse = await targetParser.writeStyle(readResponse.output);
-  if (Array.isArray(writeResponse.errors) && writeResponse.errors.length) {
-    log.error('Error transforming input to output: ' + readResponse?.errors?.[0]?.message);
-    throw new ParseError('Error transforming input to output', readResponse?.errors?.[0]?.message);
-  }
+  try {
+    const writeResponse = await targetParser.writeStyle(readResponse.output);
+    if (Array.isArray(writeResponse.errors) && writeResponse.errors.length) {
+      log.error('Error transforming input to output: ' + readResponse?.errors?.[0]?.message);
+      throw new ParseError('Error transforming input to output', readResponse?.errors?.[0]?.message);
+    }
 
-  return writeResponse.output;
+    return writeResponse.output;
+  } catch (error) {
+    throw new ParseError('Error transforming input to output');
+  }
 };
 
 /**
@@ -150,7 +162,7 @@ const getContentTypeFromParserName = (paramVal: string) => {
  * @param paramVal Query param value for the format, e.g. 'qml'
  * @returns GeoStyler Parser instance
  */
-const getParserFromUrlParam = (paramVal: string) => {
+const getParserFromUrlParam = (paramVal?: string) => {
   if (!paramVal) {
     return undefined;
   }

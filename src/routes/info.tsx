@@ -1,4 +1,3 @@
-// import { html } from '@elysiajs/html'
 import { Handler, t } from 'elysia';
 import {
   dependencies as deps,
@@ -23,7 +22,7 @@ export const versions: Handler = ({
       'geostyler-mapfile-parser': getVersionString('geostyler-mapfile-parser'),
       'geostyler-qgis-parser': getVersionString('geostyler-qgis-parser'),
       'geostyler-sld-parser': getVersionString('geostyler-sld-parser'),
-      'geostyler-arcgis-parser': getVersionString('geostyler-lyrx-parser')
+      'geostyler-lyrx-parser': getVersionString('geostyler-lyrx-parser')
     };
   } else {
     return (
