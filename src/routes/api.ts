@@ -1,8 +1,7 @@
 import { Handler, ParseError, t } from "elysia";
-import GeoStylerLyrxParser, { LyrxParser } from "geostyler-lyrx-parser";
+import LyrxParser from "geostyler-lyrx-parser";
 import MapboxStyleParser from "geostyler-mapbox-parser";
 import QGISStyleParser from "geostyler-qgis-parser";
-// import LyrxParser from "geostyler-lyrx-parser";
 import SldParser from "geostyler-sld-parser";
 
 import log from 'loggisch';
