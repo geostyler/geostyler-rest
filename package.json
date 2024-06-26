@@ -1,6 +1,7 @@
 {
-  "name": "geostyler-rest-bun",
+  "name": "geostyler-rest",
   "version": "1.0.0",
+  "description": "REST interface for GeoStyler to convert between various formats for styling of geographic data.",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
@@ -9,6 +10,17 @@
     "start": "bun run src/index.ts",
     "lint": "echo \"Linting not configured\" && exit 0"
   },
+  "keywords": [
+    "GeoStyler",
+    "REST"
+  ],
+  "contributors": [
+    {
+      "name": "GeoStyler REST Contributors",
+      "url": "https://github.com/geostyler/geostyler-rest/graphs/contributors"
+    }
+  ],
+  "license": "BSD-2-Clause",
   "dependencies": {
     "@elysiajs/html": "^1.0.2",
     "@elysiajs/swagger": "^1.0.5",
@@ -22,5 +34,6 @@
   },
   "devDependencies": {
     "bun-types": "latest"
-  }
+  },
+  "funding": "https://opencollective.com/geostyler"
 }
