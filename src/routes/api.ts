@@ -25,11 +25,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-import { Handler, ParseError, t } from "elysia";
-import { LyrxParser } from "geostyler-lyrx-parser";
-import MapboxStyleParser from "geostyler-mapbox-parser";
-import QGISStyleParser from "geostyler-qgis-parser";
-import SldParser from "geostyler-sld-parser";
+import { Handler, ParseError, t } from 'elysia';
+import { LyrxParser } from 'geostyler-lyrx-parser';
+import MapboxStyleParser from 'geostyler-mapbox-parser';
+import QGISStyleParser from 'geostyler-qgis-parser';
+import SldParser from 'geostyler-sld-parser';
 
 import log from 'loggisch';
 
@@ -49,14 +49,14 @@ export const transFormApi = {
     description: 'The style to transform in the specified format',
     required: true,
     examples: [{
-      "name": "Demo Style",
-      "rules": [
+      name: 'Demo Style',
+      rules: [
         {
-          "name": "Rule 1",
-          "symbolizers": [
+          name: 'Rule 1',
+          symbolizers: [
             {
-              "kind": "Mark",
-              "wellKnownName": "circle"
+              kind: 'Mark',
+              wellKnownName: 'circle'
             }
           ]
         }
@@ -106,7 +106,6 @@ export const transform: Handler = async ({
     return readResponse.output;
   }
 
-
   // send back the input if sourceFormat equals targetFormat
   if (sourceFormat?.toLowerCase() === targetFormat.toLowerCase()) {
     return sourceStyle;
@@ -144,10 +143,10 @@ const getContentTypeFromParserName = (paramVal: string) => {
 
   switch (paramVal.toLowerCase()) {
     case 'mapserver':
-      return 'text/plain'
+      return 'text/plain';
     case 'sld':
     case 'qml':
-      return 'application/xml'
+      return 'application/xml';
     case 'mapbox':
     case 'lyrx':
     case 'geostyler':

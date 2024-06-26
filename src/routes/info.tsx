@@ -12,6 +12,8 @@ export const versionsApi = {
   })
 };
 
+console.log('werer');
+
 export const versions: Handler = ({
   request
 }) => {
@@ -27,10 +29,10 @@ export const versions: Handler = ({
   } else {
     return (
       <html lang='en'>
-          <head>
-              <title>GeoStyler REST API Versions</title>
-          </head>
-          <body>
+        <head>
+          <title>GeoStyler REST API Versions</title>
+        </head>
+        <body>
               GeoStyler REST version {version}
           <ul>
             <li>
@@ -59,4 +61,4 @@ const getVersionString = (parserName: string) => {
   return deps[parserName as keyof typeof deps]
     ? `${deps[parserName as keyof typeof deps]}`
     : 'not installed';
-}
+};
