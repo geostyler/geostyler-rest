@@ -21,7 +21,7 @@ const getVersionString = (parserName: string) => {
 export const versions: Handler = ({
   request
 }) => {
-  const versions = {
+  const versionMap = {
     'geostyler-rest': version,
     'geostyler-mapbox-parser': getVersionString('geostyler-mapbox-parser'),
     'geostyler-mapfile-parser': getVersionString('geostyler-mapfile-parser'),
@@ -30,7 +30,7 @@ export const versions: Handler = ({
     'geostyler-lyrx-parser': getVersionString('geostyler-lyrx-parser')
   };
   if (request.headers.get('accept') === 'application/json') {
-    return versions;
+    return versionMap;
   } else {
     return (
       <html lang='en'>
@@ -41,19 +41,19 @@ export const versions: Handler = ({
               GeoStyler REST version {version}
           <ul>
             <li>
-              GeoStyler Mapbox Parser: {versions['geostyler-mapbox-parser']}
+              GeoStyler Mapbox Parser: {versionMap['geostyler-mapbox-parser']}
             </li>
             <li>
-              GeoStyler Mapfile Parser: {versions['geostyler-mapfile-parser']}
+              GeoStyler Mapfile Parser: {versionMap['geostyler-mapfile-parser']}
             </li>
             <li>
-              GeoStyler QGIS Parser: {versions['geostyler-qgis-parser']}
+              GeoStyler QGIS Parser: {versionMap['geostyler-qgis-parser']}
             </li>
             <li>
-              GeoStyler SLD Parser: {versions['geostyler-sld-parser']}
+              GeoStyler SLD Parser: {versionMap['geostyler-sld-parser']}
             </li>
             <li>
-              GeoStyler ArcGIS Parser: {versions['geostyler-lyrx-parser']}
+              GeoStyler ArcGIS Parser: {versionMap['geostyler-lyrx-parser']}
             </li>
           </ul>
         </body>
