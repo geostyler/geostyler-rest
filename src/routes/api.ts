@@ -74,8 +74,8 @@ export const transform: Handler = async ({
 }) => {
 
   if (!body) {
-    log.error('Error: No source style style given in POST body.');
-    throw new ParseError('Error', 'No source style style given in POST body.');
+    log.error('Error: No source style given in POST body.');
+    throw new ParseError('Error', 'No source style given in POST body.');
   }
 
   if (!targetFormat) {
