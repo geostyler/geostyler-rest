@@ -25,12 +25,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-import { Elysia } from "elysia";
-import { swagger } from '@elysiajs/swagger'
-import { html } from '@elysiajs/html'
-import { transFormApi, transform } from "./routes/api";
+import { Elysia } from 'elysia';
+import { swagger } from '@elysiajs/swagger';
+import { html } from '@elysiajs/html';
+import { transFormApi, transform } from './routes/api';
 import loggisch from 'loggisch';
-import { versions, versionsApi } from "./routes/info";
+import { versions, versionsApi } from './routes/info';
 
 loggisch.setLogLevel('trace');
 
@@ -38,14 +38,14 @@ const port = process.env.NODE_API_PORT || 8888;
 
 export const app = new Elysia()
   .get('/', ({ redirect }) => {
-    return redirect('/api-docs')
+    return redirect('/api-docs');
   })
   .use(swagger({
-    path: "/api-docs",
+    path: '/api-docs',
     exclude: [
-      "/api-docs",
-      "/api-docs/json",
-      "/"
+      '/api-docs',
+      '/api-docs/json',
+      '/'
     ],
     documentation: {
       info: {
@@ -55,15 +55,15 @@ export const app = new Elysia()
       }
     }
   }))
-  .group("/info", (app) => app
+  .group('/info', (a) => a
     .use(html())
-    .get("/versions", versions, versionsApi)
+    .get('/versions', versions, versionsApi)
   )
-  .group("/api", (app) => app
-    .post("/transform", transform, transFormApi)
+  .group('/api', (a) => a
+    .post('/transform', transform, transFormApi)
   )
   .listen(port);
 
-console.log(
+loggisch.info(
   `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`
 );
