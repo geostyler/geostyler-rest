@@ -3,6 +3,7 @@ import {
   dependencies as deps,
   version
 } from '../../package.json';
+import { Html } from '@elysiajs/html';
 
 export const versionsApi = {
   response: t.Any({

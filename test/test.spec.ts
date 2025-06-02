@@ -33,7 +33,7 @@ describe('root ("/")', () => {
     const response = await app
       .handle(new Request(`http://localhost:${app.server?.port}/`))
 
-    expect(response.status).toBe(301);
+    expect(response.status).toBe(302);
     expect(response.headers.get("location")).toBe('/api-docs');
   });
 });
