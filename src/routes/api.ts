@@ -70,17 +70,26 @@ export const transFormApi = {
 
 export const transform: Handler = async ({
   body,
+  set,
   query: { sourceFormat, targetFormat }
 }) => {
 
   if (!body) {
     log.error('Error: No source style given in POST body.');
-    throw new ParseError('Error', 'No source style given in POST body.');
+    set.status = 400;
+    return {
+      error: 'No source style given in POST body.',
+      code: 'INVALID_INPUT'
+    };
   }
 
   if (!targetFormat) {
     log.error('Error: URL param "sourceFormat" or "targetFormat" is missing.');
-    throw new ParseError('Error', 'URL param "sourceFormat" or "targetFormat" is missing.');
+    set.status = 400;
+    return {
+      error: 'URL param "sourceFormat" or "targetFormat" is missing.',
+      code: 'INVALID_INPUT'
+    };
   }
 
   const sourceParser = getParserFromUrlParam(sourceFormat);
@@ -97,7 +106,11 @@ export const transform: Handler = async ({
     readResponse = await sourceParser.readStyle(sourceStyle);
     if (Array.isArray(readResponse.errors) && readResponse.errors.length) {
       log.error('Error reading input: ' + readResponse?.errors?.[0]?.message);
-      throw new ParseError('Error reading input', readResponse?.errors?.[0]?.message);
+      set.status = 400;
+      return {
+        error: readResponse?.errors?.[0]?.message,
+        code: 'INVALID_INPUT'
+      };
     }
   }
 
@@ -113,7 +126,11 @@ export const transform: Handler = async ({
 
   if (readResponse.output === undefined) {
     log.error('Error reading input: ' + readResponse?.errors?.[0]?.message);
-    throw new ParseError('Error reading input', readResponse?.errors?.[0]?.message);
+    set.status = 400;
+    return {
+      error: readResponse?.errors?.[0]?.message,
+      code: 'INVALID_INPUT'
+    };
   }
 
   // transform input to output
@@ -121,12 +138,17 @@ export const transform: Handler = async ({
     const writeResponse = await targetParser.writeStyle(readResponse.output);
     if (Array.isArray(writeResponse.errors) && writeResponse.errors.length) {
       log.error('Error transforming input to output: ' + readResponse?.errors?.[0]?.message);
-      throw new ParseError('Error transforming input to output', readResponse?.errors?.[0]?.message);
+      set.status = 400;
+      return {
+        error: readResponse?.errors?.[0]?.message,
+        code: 'INVALID_INPUT'
+      };
     }
 
     return writeResponse.output;
   } catch (error) {
-    throw new ParseError('Error transforming input to output');
+    set.status = 500;
+    throw new ParseError(error as Error);
   }
 };
 

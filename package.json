@@ -22,21 +22,21 @@
   ],
   "license": "BSD-2-Clause",
   "dependencies": {
-    "@elysiajs/html": "^1.0.2",
-    "@elysiajs/swagger": "^1.0.5",
-    "@terrestris/eslint-config-typescript": "^5.0.0",
-    "elysia": "^1.0.24",
-    "eslint": "^8.57.0",
-    "geostyler-cql-parser": "4.0.0",
-    "geostyler-lyrx-parser": "^1.0.0",
-    "geostyler-mapbox-parser": "^6.0.0",
-    "geostyler-qgis-parser": "^3.0.0",
-    "geostyler-sld-parser": "^6.0.0",
+    "@elysiajs/html": "^1.3.0",
+    "@elysiajs/swagger": "^1.3.0",
+    "@terrestris/eslint-config-typescript": "^9.0.0",
+    "elysia": "^1.3.3",
+    "eslint": "^9.28.0",
+    "geostyler-cql-parser": "4.0.2",
+    "geostyler-lyrx-parser": "^1.1.3",
+    "geostyler-mapbox-parser": "^6.1.1",
+    "geostyler-qgis-parser": "^4.0.2",
+    "geostyler-sld-parser": "^7.3.0",
     "loggisch": "^0.0.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.3.0",
-    "@commitlint/config-conventional": "^19.2.2",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "bun-types": "latest"
   },
   "funding": "https://opencollective.com/geostyler"
