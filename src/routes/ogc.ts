@@ -1,7 +1,11 @@
-import { Handler, t } from 'elysia';
+import { Handler, StatusMap, t } from 'elysia';
 import { db } from '../db/init-drizzle';
 import { styleTable } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { count, eq, SQL } from 'drizzle-orm';
+import { randomUUIDv7 } from 'bun';
+import { HTTPHeaders } from 'elysia/dist/types';
+import { ElysiaCookie } from 'elysia/dist/cookies';
+import { apply } from 'json-merge-patch';
 
 export const capabilitiesApi = {
   response: t.Any({
@@ -30,6 +34,36 @@ export const getStyleApi = {
 export const getStyleMetadataApi = {
   response: t.Any({
     description: 'Retrieves a style\'s metadata by its ID'
+  })
+};
+
+export const postStyleApi = {
+  response: t.Any({
+    description: 'Add a new style to the server'
+  })
+};
+
+export const putStyleApi = {
+  response: t.Any({
+    description: 'Add a new style to the server'
+  })
+};
+
+export const deleteStyleApi = {
+  response: t.Any({
+    description: 'Remove a new style from the server'
+  })
+};
+
+export const putStyleMetadataApi = {
+  response: t.Any({
+    description: 'Update metadata of a style'
+  })
+};
+
+export const patchStyleMetadataApi = {
+  response: t.Any({
+    description: 'Update metadata of a style partially'
   })
 };
 
@@ -138,4 +172,112 @@ export const getStyleMetadata: Handler = async ({
     };
   }
   return list[0].metadata;
+};
+
+interface SetType {
+  headers: HTTPHeaders;
+  status?: number | keyof StatusMap;
+  redirect?: string;
+  cookie?: Record<string, ElysiaCookie>;
+}
+
+const insertStyle = async (id: string, set: SetType, body: string, headers: Record<string, string | undefined>) => {
+  const cnt = await db.select({ count: count() }).from(styleTable).where(eq(styleTable.styleId, id));
+  if (cnt[0].count > 0) {
+    set.status = 409;
+    return {
+      error: 'Style with this id already exists',
+      code: 'INVALID_INPUT'
+    };
+  }
+  db.insert(styleTable).values({
+    styleId: id,
+    title: id,
+    metadata: {},
+    style: body as string,
+    format: headers['content-type'],
+  });
+  set.headers.location = `http://${headers.host}/ogc/styles/${id}`;
+  set.status = 201;
+};
+
+export const postStyle: Handler = async ({
+  body,
+  set,
+  headers
+}) => {
+  const id = randomUUIDv7();
+  await insertStyle(id, set, body as string, headers);
+};
+
+export const putStyle: Handler = async ({
+  params: { styleid },
+  body,
+  headers,
+  set
+}) => {
+  const cnt = await db.select({ count: count() }).from(styleTable).where(eq(styleTable.styleId, styleid));
+  if (cnt[0].count > 0) {
+    await db.update(styleTable).set({
+      style: body as string,
+    }).where(eq(styleTable.styleId, styleid));
+    set.status = 204;
+    return;
+  }
+  await insertStyle(styleid, set, body as string, headers);
+  set.status = 201;
+};
+
+export const deleteStyle: Handler = async ({
+  params: { styleid },
+  set
+}) => {
+  const deleted = await db.delete(styleTable).where(eq(styleTable.styleId, styleid)).returning();
+  if (deleted.length === 0) {
+    set.status = 404;
+    return {
+      error: 'Style not found',
+      code: 'INVALID_INPUT'
+    };
+  }
+  set.status = 204;
+};
+
+export const putStyleMetadata: Handler = async ({
+  params: { styleid },
+  body,
+  set
+}) => {
+  const list = await db.update(styleTable).set({
+    metadata: body
+  }).where(eq(styleTable.styleId, styleid)).returning();
+  if (list.length === 0) {
+    set.status = 404;
+    return {
+      error: 'Style not found',
+      code: 'INVALID_INPUT'
+    };
+  }
+  set.status = 204;
+};
+
+export const patchStyleMetadata: Handler = async ({
+  params: { styleid },
+  body,
+  set
+}) => {
+  const list = await db.select().from(styleTable).where(eq(styleTable.styleId, styleid));
+  if (list.length === 0) {
+    set.status = 404;
+    return {
+      error: 'Style not found',
+      code: 'INVALID_INPUT'
+    };
+  }
+  const metadata = list[0].metadata || {};
+  const patchedMetadata = apply(metadata, body);
+  await db.update(styleTable).set({
+    metadata: patchedMetadata
+  }).where(eq(styleTable.styleId, styleid));
+  set.status = 204;
 };

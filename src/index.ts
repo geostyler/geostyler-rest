@@ -35,7 +35,12 @@ import {
   capabilities, capabilitiesApi,
   conformance, conformanceApi,
   getStyle, getStyleApi,
+  postStyle, postStyleApi,
+  putStyle, putStyleApi,
+  deleteStyle, deleteStyleApi,
   getStyleMetadata, getStyleMetadataApi,
+  putStyleMetadata, putStyleMetadataApi,
+  patchStyleMetadata, patchStyleMetadataApi,
   styles, stylesApi
 } from './routes/ogc';
 
@@ -77,7 +82,12 @@ if (process.env.OGC_API === 'true') {
       .get('/conformance', conformance, conformanceApi)
       .get('/styles', styles, stylesApi)
       .get('/styles/:styleid', getStyle, getStyleApi)
+      .post('/styles/:styleid', postStyle, postStyleApi)
+      .put('/styles/:styleid', putStyle, putStyleApi)
+      .delete('/styles/:styleid', deleteStyle, deleteStyleApi)
       .get('/styles/:styleid/metadata', getStyleMetadata, getStyleMetadataApi)
+      .put('/styles/:styleid/metadata', putStyleMetadata, putStyleMetadataApi)
+      .patch('/styles/:styleid/metadata', patchStyleMetadata, patchStyleMetadataApi)
     );
 }
 
