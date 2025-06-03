@@ -31,12 +31,19 @@ import { html } from '@elysiajs/html';
 import { transFormApi, transform } from './routes/api';
 import loggisch from 'loggisch';
 import { versions, versionsApi } from './routes/info';
+import {
+  capabilities, capabilitiesApi,
+  conformance, conformanceApi,
+  getStyle, getStyleApi,
+  getStyleMetadata, getStyleMetadataApi,
+  styles, stylesApi
+} from './routes/ogc';
 
 loggisch.setLogLevel('trace');
 
 const port = process.env.NODE_API_PORT || 8888;
 
-export const app = new Elysia()
+export let app = new Elysia()
   .get('/', ({ redirect }) => {
     return redirect('/api-docs');
   })
@@ -61,8 +68,20 @@ export const app = new Elysia()
   )
   .group('/api', (a) => a
     .post('/transform', transform, transFormApi)
-  )
-  .listen(port);
+  );
+
+if (process.env.OGC_API === 'true') {
+  app = app
+    .group('/ogc', a => a
+      .get('/', capabilities, capabilitiesApi)
+      .get('/conformance', conformance, conformanceApi)
+      .get('/styles', styles, stylesApi)
+      .get('/styles/:styleid', getStyle, getStyleApi)
+      .get('/styles/:styleid/metadata', getStyleMetadata, getStyleMetadataApi)
+    );
+}
+
+app = app.listen(port);
 
 loggisch.info(
   `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`

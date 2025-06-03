@@ -6,4 +6,4 @@ RUN bun install
 
 ENTRYPOINT ["bun"]
 
-CMD ["src/index.ts"]
+CMD ["--watch", "src/index.ts"]
