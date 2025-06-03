@@ -68,9 +68,18 @@ export const patchStyleMetadataApi = {
 };
 
 export const capabilities: Handler = async ({
-  headers
+  headers,
+  query: { f },
+  set
 }) => {
   const host = headers.host;
+  if (f !== 'json' && !headers.accept?.includes('application/json')) {
+    set.status = 406;
+    return {
+      error: 'Invalid format requested. Only "json" is supported.',
+      code: 'INVALID_INPUT'
+    };
+  }
 
   return {
     title: 'Styles API',
@@ -102,7 +111,19 @@ export const capabilities: Handler = async ({
     ]};
 };
 
-export const conformance: Handler = async () => {
+export const conformance: Handler = async ({
+  headers,
+  query: { f },
+  set
+}) => {
+  if (f !== 'json' && !headers.accept?.includes('application/json')) {
+    set.status = 406;
+    return {
+      error: 'Invalid format requested. Only "json" is supported.',
+      code: 'INVALID_INPUT'
+    };
+  }
+
   return {
     conformsTo: [
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/core',
@@ -114,10 +135,20 @@ export const conformance: Handler = async () => {
 };
 
 export const styles: Handler = async ({
-  headers
+  headers,
+  set,
+  query: { f }
 }) => {
   const list = await db.select().from(styleTable);
   const host = headers.host;
+
+  if (f !== 'json' && !headers.accept?.includes('application/json')) {
+    set.status = 406;
+    return {
+      error: 'Invalid format requested. Only "json" is supported.',
+      code: 'INVALID_INPUT'
+    };
+  }
 
   return {
     styles: list.map(style => ({
@@ -143,7 +174,9 @@ export const styles: Handler = async ({
 
 export const getStyle: Handler = async ({
   params: { styleid },
-  set
+  set,
+  headers,
+  query: { f }
 }) => {
   const list = await db.select().from(styleTable).where(eq(styleTable.styleId, styleid));
   if (list.length === 0) {
@@ -161,8 +194,20 @@ export const getStyle: Handler = async ({
 
 export const getStyleMetadata: Handler = async ({
   params: { styleid },
-  set
+  query: { f },
+  set,
+  headers
 }) => {
+  if (f !== 'json' && !headers.accept?.includes('application/json')) {
+    set.status = 406;
+    return {
+      error: 'Invalid format requested. Only "json" is supported.',
+      code: 'INVALID_INPUT'
+    };
+  }
+
+  set.headers['content-type'] = 'application/json';
+
   const list = await db.select().from(styleTable).where(eq(styleTable.styleId, styleid));
   if (list.length === 0) {
     set.status = 404;
@@ -206,6 +251,15 @@ export const postStyle: Handler = async ({
   set,
   headers
 }) => {
+  if (!headers['content-type']?.includes('application/json') &&
+    !headers['content-type']?.includes('application/vnd.ogc.sld+xml')) {
+    set.status = 415;
+    return {
+      error: 'Content-Type must be application/json or application/vnd.ogc.sld+xml',
+      code: 'INVALID_INPUT'
+    };
+  }
+
   const id = randomUUIDv7();
   await insertStyle(id, set, body as string, headers);
 };
@@ -216,6 +270,15 @@ export const putStyle: Handler = async ({
   headers,
   set
 }) => {
+  if (!headers['content-type']?.includes('application/json') &&
+    !headers['content-type']?.includes('application/vnd.ogc.sld+xml')) {
+    set.status = 415;
+    return {
+      error: 'Content-Type must be application/json or application/vnd.ogc.sld+xml',
+      code: 'INVALID_INPUT'
+    };
+  }
+
   const cnt = await db.select({ count: count() }).from(styleTable).where(eq(styleTable.styleId, styleid));
   if (cnt[0].count > 0) {
     await db.update(styleTable).set({
@@ -246,8 +309,17 @@ export const deleteStyle: Handler = async ({
 export const putStyleMetadata: Handler = async ({
   params: { styleid },
   body,
-  set
+  set,
+  headers
 }) => {
+  if (!headers['content-type']?.includes('application/json')) {
+    set.status = 415;
+    return {
+      error: 'Content-Type must be application/json',
+      code: 'INVALID_INPUT'
+    };
+  }
+
   const list = await db.update(styleTable).set({
     metadata: body
   }).where(eq(styleTable.styleId, styleid)).returning();
@@ -264,8 +336,17 @@ export const putStyleMetadata: Handler = async ({
 export const patchStyleMetadata: Handler = async ({
   params: { styleid },
   body,
-  set
+  set,
+  headers
 }) => {
+  if (!headers['content-type']?.includes('application/merge-patch+json')) {
+    set.status = 415;
+    return {
+      error: 'Content-Type must be application/merge-patch+json',
+      code: 'INVALID_INPUT'
+    };
+  }
+
   const list = await db.select().from(styleTable).where(eq(styleTable.styleId, styleid));
   if (list.length === 0) {
     set.status = 404;
