@@ -32,7 +32,7 @@
     "geostyler-mapbox-parser": "^6.1.1",
     "geostyler-qgis-parser": "^4.0.2",
     "geostyler-sld-parser": "^7.3.0",
-    "loggisch": "^0.0.1"
+    "loggisch": "^0.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
