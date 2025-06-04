@@ -33,9 +33,9 @@
     "geostyler-qgis-parser": "^4.0.2",
     "geostyler-sld-parser": "^7.3.0",
     "json-merge-patch": "^1.0.2",
-    "loggisch": "^0.0.1",
+    "loggisch": "^0.1.0",
     "pg": "^8.16.0",
-    "postgres": "^3.4.7"
+    "xmldom": "^0.6.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
@@ -45,6 +45,7 @@
     "@stylistic/eslint-plugin": "^4.4.0",
     "@terrestris/eslint-config-typescript": "^9.0.0",
     "@types/json-merge-patch": "^1.0.0",
+    "@types/xmldom": "^0.1.34",
     "@typescript-eslint/eslint-plugin": "^8.33.1",
     "@typescript-eslint/parser": "^8.33.1",
     "bun-types": "latest",

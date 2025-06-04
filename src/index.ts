@@ -67,6 +67,14 @@ export let app = new Elysia()
       }
     }
   }))
+  .onError((error) => {
+    loggisch.error('Error occurred:', error);
+    return {
+      status: 500,
+      message: 'Internal Server Error',
+      error: error
+    };
+  })
   .group('/info', (a) => a
     .use(html())
     .get('/versions', versions, versionsApi)
@@ -82,7 +90,7 @@ if (process.env.OGC_API === 'true') {
       .get('/conformance', conformance, conformanceApi)
       .get('/styles', styles, stylesApi)
       .get('/styles/:styleid', getStyle, getStyleApi)
-      .post('/styles/:styleid', postStyle, postStyleApi)
+      .post('/styles', postStyle, postStyleApi)
       .put('/styles/:styleid', putStyle, putStyleApi)
       .delete('/styles/:styleid', deleteStyle, deleteStyleApi)
       .get('/styles/:styleid/metadata', getStyleMetadata, getStyleMetadataApi)

@@ -6,6 +6,33 @@ import { randomUUIDv7 } from 'bun';
 import { HTTPHeaders } from 'elysia/dist/types';
 import { ElysiaCookie } from 'elysia/dist/cookies';
 import { apply } from 'json-merge-patch';
+import { DOMParser } from 'xmldom';
+import MapboxStyleParser from 'geostyler-mapbox-parser';
+import SldStyleParser from 'geostyler-sld-parser';
+import QGISStyleParser from 'geostyler-qgis-parser';
+import LyrxParser from 'geostyler-lyrx-parser';
+import log from 'loggisch';
+
+const formatMap: any = {
+  mapbox: 'application/vnd.mapbox.style+json',
+  // mapfile: 'application/vnd.mapfile.style+json',
+  sld10: 'application/vnd.ogc.sld+xml;version=1.0',
+  sld11: 'application/vnd.ogc.sld+xml;version=1.1',
+  qgis: 'application/vnd.qgis.style+xml',
+  lyrx: 'application/x-esri-lyrx'
+};
+
+const parserMap: any = {
+  'application/vnd.mapbox.style+json': new MapboxStyleParser(),
+  // 'application/vnd.mapfile.style+json': new MapfileStyleParser(),
+  'application/vnd.ogc.sld+xml;version=1.0': new SldStyleParser({ sldVersion: '1.0.0' }),
+  'application/vnd.ogc.sld+xml;version=1.1': new SldStyleParser({ sldVersion: '1.1.0' }),
+  'application/vnd.qgis.style+xml': new QGISStyleParser(),
+  'application/x-esri-lyrx': new LyrxParser()
+};
+
+const availableMimetypes = Object.values(formatMap);
+const availableFormats = Object.keys(formatMap);
 
 export const capabilitiesApi = {
   response: t.Any({
@@ -129,6 +156,7 @@ export const conformance: Handler = async ({
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/core',
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/json',
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-styles',
+      'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/mapbox-styles',
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/sld-10',
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/sld-11'
     ]};
@@ -163,13 +191,24 @@ export const styles: Handler = async ({
         type: 'application/vnd.ogc.sld+xml;version=1.1',
         rel: 'stylesheet'
       }, {
-        href: `http://${host}/ogc/styles/metadata${style.styleId}?f=json`,
+        href: `http://${host}/ogc/styles/${style.styleId}?f=lyrx`,
+        type: 'application/x-esri-lyrx',
+        rel: 'stylesheet'
+      }, {
+        href: `http://${host}/ogc/styles/${style.styleId}?f=mapbox`,
+        type: 'application/vnd.mapbox.style+json',
+        rel: 'stylesheet'
+      }, {
+        href: `http://${host}/ogc/styles/${style.styleId}?f=qgis`,
+        type: 'application/vnd.qgis.style+xml',
+        rel: 'stylesheet'
+      }, {
+        href: `http://${host}/ogc/styles/${style.styleId}/metadata?f=json`,
         type: 'application/json',
         rel: 'describedBy'
       }]
     }))
   };
-
 };
 
 export const getStyle: Handler = async ({
@@ -186,10 +225,48 @@ export const getStyle: Handler = async ({
       code: 'INVALID_INPUT'
     };
   }
-  // TODO content negotiation and check for f parameter
-  // TODO check for possible transformations and do them
-  set.headers['content-type'] = list[0].format || 'text/plain';
-  return list[0].style;
+  log.debug('Native mime type:', list[0].format);
+
+  let mimeType;
+  if (f) {
+    if (!availableFormats.includes(f)) {
+      set.status = 406;
+      return {
+        error: `Invalid format requested. Supported formats are: ${availableFormats.join(', ')}`,
+        code: 'INVALID_INPUT'
+      };
+    }
+    mimeType = formatMap[f];
+  }
+  log.debug('Mime type after f processing:', mimeType);
+  if (!mimeType) {
+    const mimeTypes = (headers.accept || '').split(',');
+    for (const item of mimeTypes) {
+      const trimmedItem = item.includes('sld') ? item : item.trim().split(';')[0];
+      if (availableMimetypes.includes(trimmedItem)) {
+        mimeType = trimmedItem;
+        break;
+      }
+    }
+  }
+  log.debug('Possible mime type after content negotiation:', mimeType);
+  if (!availableMimetypes.includes(mimeType)) {
+    set.status = 406;
+    return {
+      error: `Invalid mime type requested. Supported mime types are: ${availableMimetypes.join(', ')}`,
+      code: 'INVALID_INPUT'
+    };
+  }
+  let result;
+  if (mimeType !== list[0].format) {
+    const gsStyle = (await parserMap[list[0].format as string].readStyle(list[0].style)).output;
+    result = (await parserMap[mimeType].writeStyle(gsStyle)).output;
+  } else {
+    result = list[0].style;
+  }
+
+  set.headers['content-type'] = mimeType;
+  return result;
 };
 
 export const getStyleMetadata: Handler = async ({
@@ -235,19 +312,31 @@ const insertStyle = async (id: string, set: SetType, body: string, headers: Reco
       code: 'INVALID_INPUT'
     };
   }
-  db.insert(styleTable).values({
+
+  let fmt = headers['content-type'];
+  if (fmt === 'application/vnd.ogc.sld+xml') {
+    const xml = new DOMParser().parseFromString(body, 'application/xml');
+    const version = xml.documentElement.getAttribute('version');
+    if (version === '1.0.0') {
+      fmt = 'application/vnd.ogc.sld+xml;version=1.0';
+    } else if (version === '1.1.0') {
+      fmt = 'application/vnd.ogc.sld+xml;version=1.1';
+    }
+  }
+
+  await db.insert(styleTable).values({
     styleId: id,
     title: id,
     metadata: {},
     style: body as string,
-    format: headers['content-type'],
+    format: fmt,
   });
   set.headers.location = `http://${headers.host}/ogc/styles/${id}`;
   set.status = 201;
 };
 
 export const postStyle: Handler = async ({
-  body,
+  request,
   set,
   headers
 }) => {
@@ -261,12 +350,12 @@ export const postStyle: Handler = async ({
   }
 
   const id = randomUUIDv7();
-  await insertStyle(id, set, body as string, headers);
+  await insertStyle(id, set, await request.text(), headers);
 };
 
 export const putStyle: Handler = async ({
   params: { styleid },
-  body,
+  request,
   headers,
   set
 }) => {
@@ -282,12 +371,12 @@ export const putStyle: Handler = async ({
   const cnt = await db.select({ count: count() }).from(styleTable).where(eq(styleTable.styleId, styleid));
   if (cnt[0].count > 0) {
     await db.update(styleTable).set({
-      style: body as string,
+      style: await request.text(),
     }).where(eq(styleTable.styleId, styleid));
     set.status = 204;
     return;
   }
-  await insertStyle(styleid, set, body as string, headers);
+  await insertStyle(styleid, set, await request.text(), headers);
   set.status = 201;
 };
 

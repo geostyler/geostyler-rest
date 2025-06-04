@@ -33,6 +33,8 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres@gs-postgres/ogc
       - OGC_API=true
+      - OGC_USER=admin
+      - OGC_PASSWORD=admin
     volumes:
       - ./:/home/bun/app/
     depends_on:
