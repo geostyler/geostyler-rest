@@ -27,6 +27,7 @@ services:
     container_name: gs-rest
     build:
       context: ./
+      dockerfile: Dockerfile.dev
     image: ghcr.io/geostyler/geostyler-rest:latest
     ports:
       - 8888:8888

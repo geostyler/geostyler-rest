@@ -34,6 +34,8 @@ const parserMap: any = {
 const availableMimetypes = Object.values(formatMap);
 const availableFormats = Object.keys(formatMap);
 
+const authentication = 'Basic ' + Buffer.from(`${process.env.OGC_USER}:${process.env.OGC_PASSWORD}`).toString('base64');
+
 export const capabilitiesApi = {
   response: t.Any({
     description: 'The capabilities for this OGC API styles server'
@@ -118,7 +120,7 @@ export const capabilities: Handler = async ({
         title: 'this document'
       },
       {
-        href: `http://${host}/ogc/api?f=json`,
+        href: `http://${host}/api-docs/json?f=json`,
         rel: 'service',
         type: 'application/vnd.oai.openapi+json;version=3.0',
         title: 'the API definition in JSON'
@@ -340,6 +342,15 @@ export const postStyle: Handler = async ({
   set,
   headers
 }) => {
+  if (headers.authorization !== authentication) {
+    set.status = 401;
+    set.headers['WWW-Authenticate'] = 'Basic realm="GeoStyler OGC API"';
+    return {
+      error: 'Unauthorized',
+      code: 'UNAUTHORIZED'
+    };
+  }
+
   if (!headers['content-type']?.includes('application/json') &&
     !headers['content-type']?.includes('application/vnd.ogc.sld+xml')) {
     set.status = 415;
@@ -359,6 +370,15 @@ export const putStyle: Handler = async ({
   headers,
   set
 }) => {
+  if (headers.authorization !== authentication) {
+    set.status = 401;
+    set.headers['WWW-Authenticate'] = 'Basic realm="GeoStyler OGC API"';
+    return {
+      error: 'Unauthorized',
+      code: 'UNAUTHORIZED'
+    };
+  }
+
   if (!headers['content-type']?.includes('application/json') &&
     !headers['content-type']?.includes('application/vnd.ogc.sld+xml')) {
     set.status = 415;
@@ -382,8 +402,18 @@ export const putStyle: Handler = async ({
 
 export const deleteStyle: Handler = async ({
   params: { styleid },
+  headers,
   set
 }) => {
+  if (headers.authorization !== authentication) {
+    set.status = 401;
+    set.headers['WWW-Authenticate'] = 'Basic realm="GeoStyler OGC API"';
+    return {
+      error: 'Unauthorized',
+      code: 'UNAUTHORIZED'
+    };
+  }
+
   const deleted = await db.delete(styleTable).where(eq(styleTable.styleId, styleid)).returning();
   if (deleted.length === 0) {
     set.status = 404;
@@ -401,6 +431,15 @@ export const putStyleMetadata: Handler = async ({
   set,
   headers
 }) => {
+  if (headers.authorization !== authentication) {
+    set.status = 401;
+    set.headers['WWW-Authenticate'] = 'Basic realm="GeoStyler OGC API"';
+    return {
+      error: 'Unauthorized',
+      code: 'UNAUTHORIZED'
+    };
+  }
+
   if (!headers['content-type']?.includes('application/json')) {
     set.status = 415;
     return {
@@ -428,6 +467,15 @@ export const patchStyleMetadata: Handler = async ({
   set,
   headers
 }) => {
+  if (headers.authorization !== authentication) {
+    set.status = 401;
+    set.headers['WWW-Authenticate'] = 'Basic realm="GeoStyler OGC API"';
+    return {
+      error: 'Unauthorized',
+      code: 'UNAUTHORIZED'
+    };
+  }
+
   if (!headers['content-type']?.includes('application/merge-patch+json')) {
     set.status = 415;
     return {

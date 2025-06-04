@@ -58,7 +58,8 @@ You can run the API with support for OGC API styles (currently not a standard ye
 
 Note that the OGC API styles is an API to manage and persist styles, so you'll also need a database. Currently only postgres is supported.
 
-Activate it by setting the `OGC_API` environment variable to `true`. You'll also need to set the `DATABASE_URL` environment variable to an appropriate value, e.g. `postgres://postgres@gs-postgres:5432/ogc`
+Activate it by setting the `OGC_API` environment variable to `true`. You'll also need to set the `DATABASE_URL` environment variable to an appropriate value, e.g. `postgres://postgres@gs-postgres:5432/ogc` as well as set the `OGC_USER` and `OGC_PASSWORD` to appropriate values.
+Only authenticated requests (HTTP Basic) are allowed to modify data. Styles are stored using their native format at the point when they were inserted, but can be requested in any format GeoStyler supports.
 
 ### Compose setup
 
