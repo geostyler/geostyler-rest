@@ -6,7 +6,7 @@ import { randomUUIDv7 } from 'bun';
 import { HTTPHeaders } from 'elysia/dist/types';
 import { ElysiaCookie } from 'elysia/dist/cookies';
 import { apply } from 'json-merge-patch';
-import { DOMParser } from 'xmldom';
+import { DOMParser } from '@xmldom/xmldom';
 import MapboxStyleParser from 'geostyler-mapbox-parser';
 import SldStyleParser from 'geostyler-sld-parser';
 import QGISStyleParser from 'geostyler-qgis-parser';
@@ -19,7 +19,8 @@ const formatMap: any = {
   sld10: 'application/vnd.ogc.sld+xml;version=1.0',
   sld11: 'application/vnd.ogc.sld+xml;version=1.1',
   qgis: 'application/vnd.qgis.style+xml',
-  lyrx: 'application/x-esri-lyrx'
+  lyrx: 'application/x-esri-lyrx',
+  geostyler: 'application/vnd.geostyler+json'
 };
 
 const parserMap: any = {
@@ -205,6 +206,10 @@ export const styles: Handler = async ({
         type: 'application/vnd.qgis.style+xml',
         rel: 'stylesheet'
       }, {
+        href: `http://${host}/ogc/styles/${style.styleId}?f=geostyler`,
+        type: 'application/vnd.geostyler+json',
+        rel: 'stylesheet'
+      }, {
         href: `http://${host}/ogc/styles/${style.styleId}/metadata?f=json`,
         type: 'application/json',
         rel: 'describedBy'
@@ -262,7 +267,11 @@ export const getStyle: Handler = async ({
   let result;
   if (mimeType !== list[0].format) {
     const gsStyle = (await parserMap[list[0].format as string].readStyle(list[0].style)).output;
-    result = (await parserMap[mimeType].writeStyle(gsStyle)).output;
+    if (mimeType === 'application/vnd.geostyler+json') {
+      result = gsStyle;
+    } else {
+      result = (await parserMap[mimeType].writeStyle(gsStyle)).output;
+    }
   } else {
     result = list[0].style;
   }
@@ -318,7 +327,7 @@ const insertStyle = async (id: string, set: SetType, body: string, headers: Reco
   let fmt = headers['content-type'];
   if (fmt === 'application/vnd.ogc.sld+xml') {
     const xml = new DOMParser().parseFromString(body, 'application/xml');
-    const version = xml.documentElement.getAttribute('version');
+    const version = xml.documentElement?.getAttribute('version');
     if (version === '1.0.0') {
       fmt = 'application/vnd.ogc.sld+xml;version=1.0';
     } else if (version === '1.1.0') {
