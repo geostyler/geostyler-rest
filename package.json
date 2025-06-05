@@ -24,8 +24,9 @@
   "dependencies": {
     "@elysiajs/html": "^1.3.0",
     "@elysiajs/swagger": "^1.3.0",
+    "@xmldom/xmldom": "^0.9.8",
     "drizzle-kit": "^0.31.1",
-    "drizzle-orm": "^0.44.1",
+    "drizzle-orm": "^0.44.2",
     "elysia": "^1.3.4",
     "geostyler-cql-parser": "4.0.2",
     "geostyler-lyrx-parser": "^1.1.3",
@@ -34,18 +35,16 @@
     "geostyler-sld-parser": "^7.3.0",
     "json-merge-patch": "^1.0.2",
     "loggisch": "^0.1.0",
-    "pg": "^8.16.0",
-    "xmldom": "^0.6.0"
+    "pg": "^8.16.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.28.0",
-    "@stylistic/eslint-plugin": "^4.4.0",
+    "@stylistic/eslint-plugin": "^4.4.1",
     "@terrestris/eslint-config-typescript": "^9.0.0",
     "@types/json-merge-patch": "^1.0.0",
-    "@types/xmldom": "^0.1.34",
     "@typescript-eslint/eslint-plugin": "^8.33.1",
     "@typescript-eslint/parser": "^8.33.1",
     "bun-types": "latest",

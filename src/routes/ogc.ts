@@ -6,7 +6,7 @@ import { randomUUIDv7 } from 'bun';
 import { HTTPHeaders } from 'elysia/dist/types';
 import { ElysiaCookie } from 'elysia/dist/cookies';
 import { apply } from 'json-merge-patch';
-import { DOMParser } from 'xmldom';
+import { DOMParser } from '@xmldom/xmldom';
 import MapboxStyleParser from 'geostyler-mapbox-parser';
 import SldStyleParser from 'geostyler-sld-parser';
 import QGISStyleParser from 'geostyler-qgis-parser';
@@ -318,7 +318,7 @@ const insertStyle = async (id: string, set: SetType, body: string, headers: Reco
   let fmt = headers['content-type'];
   if (fmt === 'application/vnd.ogc.sld+xml') {
     const xml = new DOMParser().parseFromString(body, 'application/xml');
-    const version = xml.documentElement.getAttribute('version');
+    const version = xml.documentElement?.getAttribute('version');
     if (version === '1.0.0') {
       fmt = 'application/vnd.ogc.sld+xml;version=1.0';
     } else if (version === '1.1.0') {
