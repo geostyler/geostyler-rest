@@ -35,7 +35,7 @@
     "json-merge-patch": "^1.0.2",
     "loggisch": "^0.1.0",
     "pg": "^8.16.0",
-    "xmldom": "^0.6.0"
+    "@xmldom/xmldom": "^0.7.5"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
