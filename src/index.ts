@@ -31,12 +31,24 @@ import { html } from '@elysiajs/html';
 import { transFormApi, transform } from './routes/api';
 import loggisch from 'loggisch';
 import { versions, versionsApi } from './routes/info';
+import {
+  capabilities, capabilitiesApi,
+  conformance, conformanceApi,
+  getStyle, getStyleApi,
+  postStyle, postStyleApi,
+  putStyle, putStyleApi,
+  deleteStyle, deleteStyleApi,
+  getStyleMetadata, getStyleMetadataApi,
+  putStyleMetadata, putStyleMetadataApi,
+  patchStyleMetadata, patchStyleMetadataApi,
+  styles, stylesApi
+} from './routes/ogc';
 
 loggisch.setLogLevel('trace');
 
 const port = process.env.NODE_API_PORT || 8888;
 
-export const app = new Elysia()
+export let app = new Elysia()
   .get('/', ({ redirect }) => {
     return redirect('/api-docs');
   })
@@ -55,14 +67,39 @@ export const app = new Elysia()
       }
     }
   }))
+  .onError((error) => {
+    loggisch.error('Error occurred:', error);
+    return {
+      status: 500,
+      message: 'Internal Server Error',
+      error: error
+    };
+  })
   .group('/info', (a) => a
     .use(html())
     .get('/versions', versions, versionsApi)
   )
   .group('/api', (a) => a
     .post('/transform', transform, transFormApi)
-  )
-  .listen(port);
+  );
+
+if (process.env.OGC_API === 'true') {
+  app = app
+    .group('/ogc', a => a
+      .get('/', capabilities, capabilitiesApi)
+      .get('/conformance', conformance, conformanceApi)
+      .get('/styles', styles, stylesApi)
+      .get('/styles/:styleid', getStyle, getStyleApi)
+      .post('/styles', postStyle, postStyleApi)
+      .put('/styles/:styleid', putStyle, putStyleApi)
+      .delete('/styles/:styleid', deleteStyle, deleteStyleApi)
+      .get('/styles/:styleid/metadata', getStyleMetadata, getStyleMetadataApi)
+      .put('/styles/:styleid/metadata', putStyleMetadata, putStyleMetadataApi)
+      .patch('/styles/:styleid/metadata', patchStyleMetadata, patchStyleMetadataApi)
+    );
+}
+
+app = app.listen(port);
 
 loggisch.info(
   `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`

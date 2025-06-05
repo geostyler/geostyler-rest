@@ -29,12 +29,12 @@ import { describe, it, expect } from 'bun:test';
 import { app } from '../src';
 
 describe('root ("/")', () => {
-  it(`redirects to /api-docs`, async () => {
+  it('redirects to /api-docs', async () => {
     const response = await app
-      .handle(new Request(`http://localhost:${app.server?.port}/`))
+      .handle(new Request(`http://localhost:${app.server?.port}/`));
 
     expect(response.status).toBe(302);
-    expect(response.headers.get("location")).toBe('/api-docs');
+    expect(response.headers.get('location')).toBe('/api-docs');
   });
 });
 
@@ -43,9 +43,9 @@ describe('/info/versions', () => {
     const response = await app
       .handle(new Request(`http://localhost:${app.server?.port}/info/versions`, {
         headers: {
-          'accept': 'application/json'
+          accept: 'application/json'
         }
-      }))
+      }));
 
     expect(response.headers.get('content-type')).toContain('application/json');
 
@@ -61,7 +61,7 @@ describe('/info/versions', () => {
 
   it('returns the correct version information as HTML', async () => {
     const response = await app
-      .handle(new Request(`http://localhost:${app.server?.port}/info/versions`))
+      .handle(new Request(`http://localhost:${app.server?.port}/info/versions`));
 
     expect(response.headers.get('content-type')).toContain('text/html');
 
@@ -73,14 +73,14 @@ describe('/info/versions', () => {
 
 describe('/api/transform', () => {
   const data = {
-    "name": "Demo Style",
-    "rules": [
+    name: 'Demo Style',
+    rules: [
       {
-        "name": "Rule 1",
-        "symbolizers": [
+        name: 'Rule 1',
+        symbolizers: [
           {
-            "kind": "Mark",
-            "wellKnownName": "circle"
+            kind: 'Mark',
+            wellKnownName: 'circle'
           }
         ]
       }
@@ -97,8 +97,7 @@ describe('/api/transform', () => {
           },
           body: JSON.stringify(data)
         })
-      )
-
+      );
     expect(response.status).toEqual(200);
     expect(response.headers.get('content-type')).toContain('application/json');
     const body = await response.json();
@@ -107,27 +106,27 @@ describe('/api/transform', () => {
 
   it('returns 400 for equal source and target format with nonsense input', async () => {
     const response = await app
-    .handle(new Request(`http://localhost:${app.server?.port}/api/transform?&targetFormat=mapbox`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: 'some nonsense data'
-    }));
+      .handle(new Request(`http://localhost:${app.server?.port}/api/transform?&targetFormat=mapbox`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: 'some nonsense data'
+      }));
 
     expect(response.status).toEqual(400);
   });
 
   it('returns Mapbox JSON', async () => {
     const response = await app
-    .handle(new Request('http://localhost:8888/api/transform?&targetFormat=mapbox', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(data)
-    }))
+      .handle(new Request('http://localhost:8888/api/transform?&targetFormat=mapbox', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify(data)
+      }));
 
     expect(response.status).toEqual(200);
     expect(response.headers.get('content-type')).toContain('application/json');
@@ -137,13 +136,13 @@ describe('/api/transform', () => {
 
   it('returns lyrx JSON', async () => {
     const response = await app
-    .handle(new Request('http://localhost:8888/api/transform?&targetFormat=lyrx', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    }))
+      .handle(new Request('http://localhost:8888/api/transform?&targetFormat=lyrx', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      }));
 
     expect(response.status).toEqual(200);
     expect(response.headers.get('content-type')).toContain('application/json');
@@ -153,13 +152,13 @@ describe('/api/transform', () => {
 
   it('returns SLD string', async () => {
     const response = await app
-    .handle(new Request('http://localhost:8888/api/transform?&targetFormat=sld', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    }))
+      .handle(new Request('http://localhost:8888/api/transform?&targetFormat=sld', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      }));
 
     expect(response.status).toEqual(200);
     const body = await response.text();
@@ -168,13 +167,13 @@ describe('/api/transform', () => {
 
   it('returns QML string', async () => {
     const response = await app
-    .handle(new Request('http://localhost:8888/api/transform?&targetFormat=qml', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    }))
+      .handle(new Request('http://localhost:8888/api/transform?&targetFormat=qml', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      }));
 
     expect(response.status).toEqual(200);
     const body = await response.text();

@@ -1,0 +1,49 @@
+services:
+  gs-nginx:
+    container_name: gs-nginx
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/default.template:/etc/nginx/templates/default.conf.template
+    depends_on:
+      gs-rest:
+        condition: service_healthy
+  gs-postgres:
+    container_name: gs-postgres
+    image: library/postgres:17
+    ports:
+      - 5555:5432
+    volumes:
+      - ./postgresql_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+  gs-rest:
+    container_name: gs-rest
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    image: ghcr.io/geostyler/geostyler-rest:latest
+    ports:
+      - 8888:8888
+    environment:
+      - DATABASE_URL=postgres://postgres@gs-postgres/ogc
+      - OGC_API=true
+      - OGC_USER=admin
+      - OGC_PASSWORD=admin
+    volumes:
+      - ./:/home/bun/app/
+    depends_on:
+      gs-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: apt update && apt -y install curl && curl http://localhost:8888 || exit 1
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s

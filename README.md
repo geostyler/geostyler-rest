@@ -52,6 +52,19 @@ docker run -e NODE_API_PORT=9999 -p 9999:9999 geostyler_rest_server
 Open http://localhost:9999/api-docs/ in a browser
 ```
 
+## Run with OGC API styles support
+
+You can run the API with support for OGC API styles (currently not a standard yet but with draft status). It will run under the /ogc endpoint.
+
+Note that the OGC API styles is an API to manage and persist styles, so you'll also need a database. Currently only postgres is supported.
+
+Activate it by setting the `OGC_API` environment variable to `true`. You'll also need to set the `DATABASE_URL` environment variable to an appropriate value, e.g. `postgres://postgres@gs-postgres:5432/ogc` as well as set the `OGC_USER` and `OGC_PASSWORD` to appropriate values.
+Only authenticated requests (HTTP Basic) are allowed to modify data. Styles are stored using their native format at the point when they were inserted, but can be requested in any format GeoStyler supports.
+
+### Compose setup
+
+The docker compose setup includes a complete dev setup including an nginx, a postgres and the gs-rest service. It has the OGC API activated by default. If you just want to run the geostyler-rest API quickly without the OGC API, just run `bun run start` instead.
+
 ## <a name="funding"></a>Funding & financial sponsorship
 
 Maintenance and further development of this code can be funded through the
