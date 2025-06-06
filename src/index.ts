@@ -41,7 +41,11 @@ import {
   getStyleMetadata, getStyleMetadataApi,
   putStyleMetadata, putStyleMetadataApi,
   patchStyleMetadata, patchStyleMetadataApi,
-  styles, stylesApi
+  styles, stylesApi,
+  resources, resourcesApi,
+  getResource, getResourceApi,
+  putResource, putResourceApi,
+  deleteResource, deleteResourceApi
 } from './routes/ogc';
 
 loggisch.setLogLevel('trace');
@@ -67,14 +71,15 @@ export let app = new Elysia()
       }
     }
   }))
-  .onError((error) => {
-    loggisch.error('Error occurred:', error);
-    return {
-      status: 500,
-      message: 'Internal Server Error',
-      error: error
-    };
-  })
+  // looks like this needs to be commented out, else PUT will not work (body already used)
+  // .onError((error) => {
+  //   loggisch.error('Error occurred:', error);
+  //   return {
+  //     status: 500,
+  //     message: 'Internal Server Error',
+  //     error: error
+  //   };
+  // })
   .group('/info', (a) => a
     .use(html())
     .get('/versions', versions, versionsApi)
@@ -96,6 +101,10 @@ if (process.env.OGC_API === 'true') {
       .get('/styles/:styleid/metadata', getStyleMetadata, getStyleMetadataApi)
       .put('/styles/:styleid/metadata', putStyleMetadata, putStyleMetadataApi)
       .patch('/styles/:styleid/metadata', patchStyleMetadata, patchStyleMetadataApi)
+      .get('/resources', resources, resourcesApi)
+      .get('/resources/:resourceId', getResource, getResourceApi)
+      .put('/resources/:resourceId', putResource, putResourceApi)
+      .delete('/resources/:resourceId', deleteResource, deleteResourceApi)
     );
 }
 

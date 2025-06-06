@@ -1,6 +1,6 @@
 import { Handler, StatusMap, t } from 'elysia';
 import { db } from '../db/init-drizzle';
-import { styleTable } from '../db/schema';
+import { resourceTable, styleTable } from '../db/schema';
 import { count, eq, SQL } from 'drizzle-orm';
 import { randomUUIDv7 } from 'bun';
 import { HTTPHeaders } from 'elysia/dist/types';
@@ -12,6 +12,7 @@ import SldStyleParser from 'geostyler-sld-parser';
 import QGISStyleParser from 'geostyler-qgis-parser';
 import LyrxParser from 'geostyler-lyrx-parser';
 import log from 'loggisch';
+import { customType } from 'drizzle-orm/pg-core';
 
 const formatMap: any = {
   mapbox: 'application/vnd.mapbox.style+json',
@@ -97,6 +98,30 @@ export const patchStyleMetadataApi = {
   })
 };
 
+export const resourcesApi = {
+  response: t.Any({
+    description: 'Fetch the list of resources available in the server'
+  })
+};
+
+export const getResourceApi = {
+  response: t.Any({
+    description: 'Get a resource by its ID'
+  })
+};
+
+export const putResourceApi = {
+  response: t.Any({
+    description: 'Add or update a resource by its ID'
+  })
+};
+
+export const deleteResourceApi = {
+  response: t.Any({
+    description: 'Delete a resource by its ID'
+  })
+};
+
 export const capabilities: Handler = async ({
   headers,
   query: { f },
@@ -161,7 +186,9 @@ export const conformance: Handler = async ({
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-styles',
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/mapbox-styles',
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/sld-10',
-      'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/sld-11'
+      'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/sld-11',
+      'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/resources',
+      'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-resources'
     ]};
 };
 
@@ -506,5 +533,116 @@ export const patchStyleMetadata: Handler = async ({
   await db.update(styleTable).set({
     metadata: patchedMetadata
   }).where(eq(styleTable.styleId, styleid));
+  set.status = 204;
+};
+
+export const resources: Handler = async ({
+  headers,
+  set,
+  query: { f }
+}) => {
+  if (f !== 'json' && !headers.accept?.includes('application/json')) {
+    set.status = 406;
+    return {
+      error: 'Invalid format requested. Only "json" is supported.',
+      code: 'INVALID_INPUT'
+    };
+  }
+
+  const resourceList = await db.select().from(resourceTable);
+
+  return {
+    resources: [resourceList.map(resource => ({
+      id: resource.resourceId,
+      link: {
+        href: resource.resourceId,
+        type: resource.format,
+        rel: '???'
+      }
+    }))]
+  };
+};
+
+export const getResource: Handler = async ({
+  params: { resourceId },
+  headers,
+  set,
+}) => {
+  const resource = await db.select().from(resourceTable).where(eq(resourceTable.resourceId, resourceId));
+  if (resource.length === 0) {
+    set.status = 404;
+    return {
+      error: 'Resource not found',
+      code: 'INVALID_INPUT'
+    };
+  }
+  if (!headers.accept?.includes(resource[0].format)) {
+    set.status = 406;
+    return {
+      error: `Invalid format requested. Supported format is: ${resource[0].format}`,
+      code: 'INVALID_INPUT'
+    };
+  }
+
+  set.headers['Content-Type'] = resource[0].format;
+  set.headers['Content-Disposition'] = `attachment; filename="${resource[0].resourceId}"`;
+  return new Response(await resource[0].data);
+};
+
+export const putResource: Handler = async ({
+  params: { resourceId },
+  request,
+  headers,
+  set
+}) => {
+  const data = Buffer.from(await request.arrayBuffer());
+
+  if (headers.authorization !== authentication) {
+    set.status = 401;
+    set.headers['WWW-Authenticate'] = 'Basic realm="GeoStyler OGC API"';
+    return {
+      error: 'Unauthorized',
+      code: 'UNAUTHORIZED'
+    };
+  }
+
+  await db.insert(resourceTable).values({
+    resourceId,
+    format: headers['content-type'] || 'application/octet-stream',
+    data
+  }).onConflictDoUpdate({
+    target: resourceTable.resourceId,
+    set: {
+      format: headers['content-type'] || 'application/octet-stream',
+      data
+    }
+  });
+
+  set.status = 204;
+};
+
+export const deleteResource: Handler = async ({
+  params: { resourceId },
+  headers,
+  set
+}) => {
+  if (headers.authorization !== authentication) {
+    set.status = 401;
+    set.headers['WWW-Authenticate'] = 'Basic realm="GeoStyler OGC API"';
+    return {
+      error: 'Unauthorized',
+      code: 'UNAUTHORIZED'
+    };
+  }
+
+  const changes = await db.delete(resourceTable).where(eq(resourceTable.resourceId, resourceId));
+  if (changes === 0) {
+    set.status = 404;
+    return {
+      error: 'Resource not found',
+      code: 'INVALID_INPUT'
+    };
+  };
+
   set.status = 204;
 };
