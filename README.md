@@ -2,6 +2,8 @@
 
 REST interface for GeoStyler to convert between various formats for styling of geographic data.
 
+Try it out in our live demo: https://rest.geostyler.org
+
 ## Dev-Setup
 
 ### Run dev-server
