@@ -47,12 +47,22 @@ import {
   putResource, putResourceApi,
   deleteResource, deleteResourceApi
 } from './routes/ogc';
+import cors from '@elysiajs/cors';
 
 loggisch.setLogLevel('trace');
 
 const port = process.env.NODE_API_PORT || 8888;
 
+// see https://elysiajs.com/plugins/cors for options
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || true,
+  methods: process.env.CORS_METHODS || '*',
+  allowedHeaders: process.env.CORS_ALLOWED_HEADERS || '*',
+  exposeHeaders: process.env.CORS_EXPOSE_HEADERS || '*',
+};
+
 export let app = new Elysia()
+  .use(cors(corsOptions))
   .get('/', ({ redirect }) => {
     return redirect('/api-docs');
   })
