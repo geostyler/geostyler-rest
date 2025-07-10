@@ -52,6 +52,7 @@ import cors from '@elysiajs/cors';
 loggisch.setLogLevel('trace');
 
 const port = process.env.NODE_API_PORT || 8888;
+const host = process.env.NODE_API_HOST || `http://localhost:${port}/`;
 
 // see https://elysiajs.com/plugins/cors for options
 const corsOptions = {
@@ -78,8 +79,11 @@ export let app = new Elysia()
         title: 'GeoStyler Rest API',
         version: '1.0.0',
         description: 'This is a REST API for the [GeoStyler](https://github.com/geostyler/geostyler) library.'
-      }
-    }
+      },
+      servers: [{
+        url: host,
+      }]
+    },
   }))
   // looks like this needs to be commented out, else PUT will not work (body already used)
   // .onError((error) => {
