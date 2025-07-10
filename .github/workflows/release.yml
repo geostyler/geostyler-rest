@@ -30,10 +30,14 @@ jobs:
       - name: Install dependencies ⏬
         run: bun install
 
-      - name: Release
+      - name: Release 🚀
+        uses: cycjimmy/semantic-release-action@v4.2.0
+        id: semantic
         env:
+          # We use a PAT here since GITHUB_TOKEN does not
+          # trigger other workflows (e.g. updating gh-pages,
+          # notification to Discord, etc.)
           GITHUB_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
-        run: bunx semantic-release
 
       - name: Log in to the Container registry
         uses: docker/login-action@3d100841f68d4548bf57e52eb27bd33ec5069f55
