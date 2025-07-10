@@ -37,7 +37,7 @@ cd /path/to/this/checkout
 
 bun install
 
-bun run src/index.ts
+NODE_API_HOST=https://your-host.com/foo bun run src/index.ts
 
 Open http://localhost:8888/api-docs/ in a browser
 ```

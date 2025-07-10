@@ -36,6 +36,7 @@ services:
       - OGC_API=true
       - OGC_USER=admin
       - OGC_PASSWORD=admin
+      - NODE_API_HOST=http://localhost/
     volumes:
       - ./:/home/bun/app/
     depends_on:
