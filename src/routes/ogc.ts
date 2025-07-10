@@ -12,7 +12,6 @@ import SldStyleParser from 'geostyler-sld-parser';
 import QGISStyleParser from 'geostyler-qgis-parser';
 import LyrxParser from 'geostyler-lyrx-parser';
 import log from 'loggisch';
-import { customType } from 'drizzle-orm/pg-core';
 
 const formatMap: any = {
   mapbox: 'application/vnd.mapbox.style+json',
@@ -30,7 +29,11 @@ const parserMap: any = {
   'application/vnd.ogc.sld+xml;version=1.0': new SldStyleParser({ sldVersion: '1.0.0' }),
   'application/vnd.ogc.sld+xml;version=1.1': new SldStyleParser({ sldVersion: '1.1.0' }),
   'application/vnd.qgis.style+xml': new QGISStyleParser(),
-  'application/x-esri-lyrx': new LyrxParser()
+  'application/x-esri-lyrx': new LyrxParser(),
+  'application/vnd.geostyler+json': {
+    readStyle: async (style: string) => ({ output: JSON.parse(style) }),
+    writeStyle: async (style: any) => ({ output: JSON.stringify(style, null, 2) })
+  }
 };
 
 const availableMimetypes = Object.values(formatMap);
@@ -387,11 +390,11 @@ export const postStyle: Handler = async ({
     };
   }
 
-  if (!headers['content-type']?.includes('application/json') &&
-    !headers['content-type']?.includes('application/vnd.ogc.sld+xml')) {
+  const types = Object.values(formatMap);
+  if (!types.includes(headers['content-type'])) {
     set.status = 415;
     return {
-      error: 'Content-Type must be application/json or application/vnd.ogc.sld+xml',
+      error: 'Content-Type must be one of ' + types.join(', '),
       code: 'INVALID_INPUT'
     };
   }
@@ -415,11 +418,12 @@ export const putStyle: Handler = async ({
     };
   }
 
-  if (!headers['content-type']?.includes('application/json') &&
-    !headers['content-type']?.includes('application/vnd.ogc.sld+xml')) {
+  const types = Object.values(formatMap);
+
+  if (!types.includes(headers['content-type'])) {
     set.status = 415;
     return {
-      error: 'Content-Type must be application/json or application/vnd.ogc.sld+xml',
+      error: 'Content-Type must be one of ' + types.join(', '),
       code: 'INVALID_INPUT'
     };
   }
