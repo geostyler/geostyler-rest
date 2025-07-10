@@ -182,7 +182,7 @@ export const conformance: Handler = async ({
   return {
     conformsTo: [
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/core',
-      'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/json',
+      'http://www.opengis.net/spec/ogcapi-common-1/1.0/req/json',
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-styles',
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/mapbox-styles',
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/sld-10',
