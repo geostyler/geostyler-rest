@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/geostyler/geostyler-rest/compare/v1.0.0...v1.0.1) (2025-07-10)
+
+### Bug Fixes
+
+* configure swagger basepath via env variable ([fd2ca9f](https://github.com/geostyler/geostyler-rest/commit/fd2ca9f392a3e3a68015cfe5f4a0cff18501b3b3))
+
 ## 1.0.0 (2025-07-10)
 
 ### ⚠ BREAKING CHANGES
