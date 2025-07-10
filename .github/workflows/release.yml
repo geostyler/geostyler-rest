@@ -24,6 +24,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      - name: Use bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies ⏬
+        run: bun install
+
       - name: Release 🚀
         uses: cycjimmy/semantic-release-action@v4.2.0
         id: semantic
@@ -32,11 +38,6 @@ jobs:
           # trigger other workflows (e.g. updating gh-pages,
           # notification to Discord, etc.)
           GITHUB_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
-        with:
-          extra_plugins: |
-            @semantic-release/git@10.0.1
-            @semantic-release/changelog@6.0.3
-            @commitlint/config-conventional@19.8.1
 
       - name: Log in to the Container registry
         uses: docker/login-action@3d100841f68d4548bf57e52eb27bd33ec5069f55
