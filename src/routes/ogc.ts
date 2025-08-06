@@ -1,7 +1,7 @@
 import { Handler, StatusMap, t } from 'elysia';
 import { db } from '../db/init-drizzle';
 import { resourceTable, styleTable } from '../db/schema';
-import { count, eq, SQL } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 import { randomUUIDv7 } from 'bun';
 import { HTTPHeaders } from 'elysia/dist/types';
 import { ElysiaCookie } from 'elysia/dist/cookies';
@@ -12,6 +12,7 @@ import SldStyleParser from 'geostyler-sld-parser';
 import QGISStyleParser from 'geostyler-qgis-parser';
 import LyrxParser from 'geostyler-lyrx-parser';
 import log from 'loggisch';
+import { Style } from 'geostyler-style';
 
 const formatMap: any = {
   mapbox: 'application/vnd.mapbox.style+json',
@@ -29,10 +30,13 @@ const parserMap: any = {
   'application/vnd.ogc.sld+xml;version=1.0': new SldStyleParser({ sldVersion: '1.0.0' }),
   'application/vnd.ogc.sld+xml;version=1.1': new SldStyleParser({ sldVersion: '1.1.0' }),
   'application/vnd.qgis.style+xml': new QGISStyleParser(),
-  'application/x-esri-lyrx': new LyrxParser(),
+  'application/x-esri-lyrx': {
+    readStyle: async (style: string) => ((new LyrxParser()).readStyle(JSON.parse(style))),
+    writeStyle: async (style: Style) => ((new LyrxParser()).writeStyle(style))
+  },
   'application/vnd.geostyler+json': {
     readStyle: async (style: string) => ({ output: JSON.parse(style) }),
-    writeStyle: async (style: any) => ({ output: JSON.stringify(style, null, 2) })
+    writeStyle: async (style: Style) => ({ output: JSON.stringify(style, null, 2) })
   }
 };
 
