@@ -34,6 +34,7 @@
     "geostyler-mapbox-parser": "^6.1.1",
     "geostyler-qgis-parser": "^4.0.2",
     "geostyler-sld-parser": "^8.1.0",
+    "geostyler-style": "^10.3.0",
     "json-merge-patch": "^1.0.2",
     "loggisch": "^0.1.0",
     "pg": "^8.16.3"
