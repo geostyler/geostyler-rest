@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/geostyler/geostyler-rest/compare/v1.0.1...v1.0.2) (2025-08-12)
+
+### Bug Fixes
+
+* **deps:** update dependency geostyler-sld-parser to v8 ([47d2735](https://github.com/geostyler/geostyler-rest/commit/47d27352aa4acb48d1873a3478d4738d173731a3))
+* **ogc api:** json parse lyrx style before passing to style parser ([6529742](https://github.com/geostyler/geostyler-rest/commit/652974233fb2828ebc5c03e14437f6ce474cf7e1))
+
 ## [1.0.1](https://github.com/geostyler/geostyler-rest/compare/v1.0.0...v1.0.1) (2025-07-10)
 
 ### Bug Fixes
