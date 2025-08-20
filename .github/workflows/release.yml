@@ -31,7 +31,7 @@ jobs:
         run: bun install
 
       - name: Release 🚀
-        uses: cycjimmy/semantic-release-action@v4.2.0
+        uses: cycjimmy/semantic-release-action@v4.2.2
         id: semantic
         env:
           # We use a PAT here since GITHUB_TOKEN does not
