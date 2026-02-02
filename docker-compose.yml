@@ -11,7 +11,7 @@ services:
         condition: service_healthy
   gs-postgres:
     container_name: gs-postgres
-    image: library/postgres:17
+    image: library/postgres:18
     ports:
       - 5555:5432
     volumes:
