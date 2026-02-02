@@ -1,5 +1,4 @@
 import { defineConfig } from 'drizzle-kit';
-import loggisch from 'loggisch';
 
 export default defineConfig({
   out: './drizzle',
