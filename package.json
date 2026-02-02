@@ -36,7 +36,7 @@
     "geostyler-sld-parser": "^8.1.0",
     "geostyler-style": "^11.0.0",
     "json-merge-patch": "^1.0.2",
-    "loggisch": "^0.1.0",
+    "loggisch": "^1.0.0",
     "pg": "^8.16.3"
   },
   "devDependencies": {
