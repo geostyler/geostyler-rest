@@ -29,7 +29,7 @@ import { Elysia } from 'elysia';
 import { swagger } from '@elysiajs/swagger';
 import { html } from '@elysiajs/html';
 import { transFormApi, transform } from './routes/api';
-import loggisch from 'loggisch';
+import { logger, setLogLevel } from 'loggisch';
 import { versions, versionsApi } from './routes/info';
 import {
   capabilities, capabilitiesApi,
@@ -49,7 +49,7 @@ import {
 } from './routes/ogc';
 import cors from '@elysiajs/cors';
 
-loggisch.setLogLevel('trace');
+setLogLevel('trace');
 
 const port = process.env.NODE_API_PORT || 8888;
 const host = process.env.NODE_API_HOST || `http://localhost:${port}/`;
@@ -124,6 +124,6 @@ if (process.env.OGC_API === 'true') {
 
 app = app.listen(port);
 
-loggisch.info(
+logger.info(
   `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`
 );

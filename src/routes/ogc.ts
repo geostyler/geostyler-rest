@@ -11,7 +11,7 @@ import MapboxStyleParser from 'geostyler-mapbox-parser';
 import SldStyleParser from 'geostyler-sld-parser';
 import QGISStyleParser from 'geostyler-qgis-parser';
 import LyrxParser from 'geostyler-lyrx-parser';
-import log from 'loggisch';
+import { logger } from 'loggisch';
 import { Style } from 'geostyler-style';
 
 const formatMap: any = {
@@ -170,7 +170,8 @@ export const capabilities: Handler = async ({
         type: 'application/json',
         title: 'the set of styles shared via this API'
       }
-    ]};
+    ]
+  };
 };
 
 export const conformance: Handler = async ({
@@ -196,7 +197,8 @@ export const conformance: Handler = async ({
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/sld-11',
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/resources',
       'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-resources'
-    ]};
+    ]
+  };
 };
 
 export const styles: Handler = async ({
@@ -266,7 +268,7 @@ export const getStyle: Handler = async ({
       code: 'INVALID_INPUT'
     };
   }
-  log.debug('Native mime type:', list[0].format);
+  logger.debug('Native mime type:', list[0].format);
 
   let mimeType;
   if (f) {
@@ -279,7 +281,7 @@ export const getStyle: Handler = async ({
     }
     mimeType = formatMap[f];
   }
-  log.debug('Mime type after f processing:', mimeType);
+  logger.debug('Mime type after f processing:', mimeType);
   if (!mimeType) {
     const mimeTypes = (headers.accept || '').split(',');
     for (const item of mimeTypes) {
@@ -290,7 +292,7 @@ export const getStyle: Handler = async ({
       }
     }
   }
-  log.debug('Possible mime type after content negotiation:', mimeType);
+  logger.debug('Possible mime type after content negotiation:', mimeType);
   if (!availableMimetypes.includes(mimeType)) {
     set.status = 406;
     return {
@@ -594,7 +596,7 @@ export const getResource: Handler = async ({
 
   set.headers['Content-Type'] = resource[0].format;
   set.headers['Content-Disposition'] = `attachment; filename="${resource[0].resourceId}"`;
-  return new Response(await resource[0].data);
+  return new Response(new Uint8Array(resource[0].data));
 };
 
 export const putResource: Handler = async ({

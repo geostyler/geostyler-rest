@@ -31,7 +31,7 @@ import MapboxStyleParser from 'geostyler-mapbox-parser';
 import QGISStyleParser from 'geostyler-qgis-parser';
 import SldParser from 'geostyler-sld-parser';
 
-import log from 'loggisch';
+import { logger } from 'loggisch';
 
 export const transFormApi = {
   query: t.Object({
@@ -75,7 +75,7 @@ export const transform: Handler = async ({
 }) => {
 
   if (!body) {
-    log.error('Error: No source style given in POST body.');
+    logger.error('Error: No source style given in POST body.');
     set.status = 400;
     return {
       error: 'No source style given in POST body.',
@@ -84,7 +84,7 @@ export const transform: Handler = async ({
   }
 
   if (!targetFormat) {
-    log.error('Error: URL param "sourceFormat" or "targetFormat" is missing.');
+    logger.error('Error: URL param "sourceFormat" or "targetFormat" is missing.');
     set.status = 400;
     return {
       error: 'URL param "sourceFormat" or "targetFormat" is missing.',
@@ -105,7 +105,7 @@ export const transform: Handler = async ({
   } else {
     readResponse = await sourceParser.readStyle(sourceStyle);
     if (Array.isArray(readResponse.errors) && readResponse.errors.length) {
-      log.error('Error reading input: ' + readResponse?.errors?.[0]?.message);
+      logger.error('Error reading input: ' + readResponse?.errors?.[0]?.message);
       set.status = 400;
       return {
         error: readResponse?.errors?.[0]?.message,
@@ -125,7 +125,7 @@ export const transform: Handler = async ({
   }
 
   if (readResponse.output === undefined) {
-    log.error('Error reading input: ' + readResponse?.errors?.[0]?.message);
+    logger.error('Error reading input: ' + readResponse?.errors?.[0]?.message);
     set.status = 400;
     return {
       error: readResponse?.errors?.[0]?.message,
@@ -137,7 +137,7 @@ export const transform: Handler = async ({
   try {
     const writeResponse = await targetParser.writeStyle(readResponse.output);
     if (Array.isArray(writeResponse.errors) && writeResponse.errors.length) {
-      log.error('Error transforming input to output: ' + readResponse?.errors?.[0]?.message);
+      logger.error('Error transforming input to output: ' + readResponse?.errors?.[0]?.message);
       set.status = 400;
       return {
         error: readResponse?.errors?.[0]?.message,
