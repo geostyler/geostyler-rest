@@ -4,6 +4,10 @@ REST interface for GeoStyler to convert between various formats for styling of g
 
 Try it out in our live demo: https://rest.geostyler.org
 
+## :rocket: GeoStyler Code Sprint 2026
+
+We are happy to announce the next **online-only** GeoStyler Code Sprint from **28.-30.09.2026**. Be part of it! More infos on https://geostyler.org.
+
 ## Dev-Setup
 
 ### Run dev-server
