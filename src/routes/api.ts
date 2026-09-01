@@ -43,7 +43,12 @@ export const transFormApi = {
       description: 'The format of the output style',
       enum: ['geostyler', 'sld', 'qml', 'mapbox', 'mapserver', 'lyrx'],
       default: 'mapbox'
-    })
+    }),
+    sldVersion: t.Optional(t.String({
+      description: 'SLD version to use when targetFormat is "sld" (1.0.0 or 1.1.0)',
+      enum: ['1.0.0', '1.1.0'],
+      default: '1.0.0'
+    }))
   }),
   body: t.Any({
     description: 'The style to transform in the specified format',
@@ -71,7 +76,7 @@ export const transFormApi = {
 export const transform: Handler = async ({
   body,
   set,
-  query: { sourceFormat, targetFormat }
+  query: { sourceFormat, targetFormat, sldVersion }
 }) => {
 
   if (!body) {
@@ -92,8 +97,8 @@ export const transform: Handler = async ({
     };
   }
 
-  const sourceParser = getParserFromUrlParam(sourceFormat);
-  const targetParser = getParserFromUrlParam(targetFormat);
+  const sourceParser = getParserFromUrlParam(sourceFormat, sldVersion);
+  const targetParser = getParserFromUrlParam(targetFormat, sldVersion);
 
   let readResponse;
   // TODO: type should be fixed here
@@ -181,9 +186,10 @@ const getContentTypeFromParserName = (paramVal: string) => {
  * Returns the corresponding parser instance for the given format from the URL.
  *
  * @param paramVal Query param value for the format, e.g. 'qml'
+ * @param sldVersion Optional SLD version (1.0.0 or 1.1.0)
  * @returns GeoStyler Parser instance
  */
-const getParserFromUrlParam = (paramVal?: string) => {
+const getParserFromUrlParam = (paramVal?: string, sldVersion?: string) => {
   if (!paramVal) {
     return undefined;
   }
@@ -196,7 +202,7 @@ const getParserFromUrlParam = (paramVal?: string) => {
     // case 'mapserver':
     //   return new MapfileParser();
     case 'sld':
-      return new SldParser();
+      return new SldParser({ sldVersion: (sldVersion as '1.0.0' | '1.1.0') || '1.0.0' });
     case 'qml':
       return new QGISStyleParser();
     case 'geostyler':
